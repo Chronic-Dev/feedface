@@ -16,6 +16,7 @@ flat_interpose_placeholders.dylib: flat_interpose.c
 
 kern_sploit: kern_sploit.c
 	$(CC) $(CCFLAGS) -o $@ $^
+	ldid -S $@
 	
 clean:
 	rm flat_interpose.dylib flat_interpose_placeholders.dylib kern_sploit

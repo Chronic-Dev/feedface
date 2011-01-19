@@ -40,7 +40,7 @@ BASE = 0
 def pack_adjust_off(off):
     return struct.pack("<L", ctypes.c_uint32(off - BASE).value)
 
-for s in commands.getoutput("nm ../../flat_interpose.dylib").splitlines():
+for s in commands.getoutput("nm ../flat_interpose_placeholders.dylib").splitlines():
     t = s.split()
     off = t[0]
     name = t[-1]
