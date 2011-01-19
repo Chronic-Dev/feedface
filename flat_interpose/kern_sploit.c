@@ -7,7 +7,7 @@ security.mac.proc_enforce=0
 */
 int main()
 {
-    syslog("kern_sploit starting !");
+    syslog(4, "kern_sploit starting !");
     if( fork())
     {
         int one = 1;
@@ -20,7 +20,7 @@ int main()
 
     while(1)
     {
-        syslog("hey !!!");
+        syslog(4, "hey !!!");
         sleep(5);
     }
     return 0;
