@@ -7,9 +7,11 @@ extern "C" {
 
 #define DEBUG 1
 
-#define info(...) printf(__VA_ARGS__)
-#define error(...) fprintf(stderr, __VA_ARGS__)
-#define debug(...) if(_debug) fprintf(stderr, __VA_ARGS__)
+extern int(*myprintf)(const char *fmt, ...);
+
+#define info(...)  myprinf(__VA_ARGS__)
+#define error(...) myprintf( __VA_ARGS__)
+#define debug(...) if(_debug) myprintf( __VA_ARGS__)
 
 extern int _debug;
 

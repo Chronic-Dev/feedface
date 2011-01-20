@@ -63,7 +63,7 @@ void* macho_find_symbol(unsigned char* data, const char* symname) {
 	macho_header_t* header = (macho_header_t*) data;
 
 	if(header->magic == MACHO_MAGIC_THIN) {
-		debug("Found thin mach-o file\n");
+		//debug("Found thin mach-o file\n");
 		offset += sizeof(macho_header_t);
 		//macho_debug_header(header);
 
@@ -72,21 +72,28 @@ void* macho_find_symbol(unsigned char* data, const char* symname) {
 			if(load->cmd == MACHO_CMD_SYMTAB) {
 				macho_symtab_cmd_t* symtab = (macho_symtab_cmd_t*) &data[offset];
 				//macho_debug_symtab_cmd(symtab);
-				offset = symtab->symoff;
+			
+				unsigned int offset2 = symtab->symoff;
 
 				for(j = 0; j < symtab->nsyms; j++) {
-					macho_nlist_t* nlist = (macho_nlist_t*) &data[offset];
+					macho_nlist_t* nlist = (macho_nlist_t*) &data[offset2];
+					//macho_debug_nlist(nlist);
+
+					debug("%08x %08x\n", symtab->stroff, nlist->un.strx);
+
+					continue;
 					char* name = (char*) &data[symtab->stroff + nlist->un.strx];
 					if(!strcmp(name, symname)) {
-						//debug("Functions %s at 0x%x\n", name, nlist->value);
+						debug("Functions %s at 0x%x\n", name, nlist->value);
 						return (void*) nlist->value;
-					}
-					offset += sizeof(macho_nlist_t);
+					} else {
+						debug("%s\n", name);
+					} 
+					offset2 += sizeof(macho_nlist_t);
 				}
 			}
 			offset += load->cmdsize;
 		}
-
 	} else if(header->magic == MACHO_MAGIC_FAT) {
 		// This Mach-O file runs on multiple architectures
 		debug("Found fat mach-o file\n");
