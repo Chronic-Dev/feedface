@@ -235,7 +235,6 @@ void payload() {
         	"mov     r10, r3\n\t"
 		"mov     r11, r4\n\t"
 		"pop     {r4-r7,pc}"
-		//"pop     {r4-r7}\n\t"
 	);
 
 	// pop	{r7, pc}
