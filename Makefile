@@ -12,3 +12,5 @@ all:
 	$(CC) $(CCFLAGS) -o payload.o payload.c
 	$(LD) $(LDFLAGS) -o payload payload.o -order_file ld.order -sectalign __TEXT __text 0x1000 -segaddr __TEXT 0xf000
 	rm payload.o
+clean:
+	rm -f payload
