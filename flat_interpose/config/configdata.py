@@ -77,7 +77,7 @@
         # ldr r0, [r0] -> _launch_data_new_errno
         0:              '- 00 00 90 e5 .. .. .. .. 04 20 a0 e1',
         # lsr r0, r0, #2 -> _setrlimit
-        1:              '05 10 a0 e1 - 20 01 a0 e1 .. .. .. .. 01 00 70 e3',
+        1:              '05 10 a0 e1 - 20 01 a0 e1 .. .. .. .. 01 00 70 e3 04 00 00 1A',
         # add r0, #3 -> __exit
         2:              '01 00 00 .. - 03 00 80 e2',
         # ldmia r0, {r0-r3} -> _audit_token_to_au32
@@ -101,7 +101,7 @@
         # mov r0, r6; pop {r4-r7, pc}
        11:              '@ - 06 00 a0 e1 f0 80 bd e8',
        # mov r0, #0; bx lr  (launchd stat hook so no need to create .launchd_use_gmalloc)
-       12:              '@ + 00 20 70 47',
+       12:              '@ - 00 00 A0 E3 1E FF 2F E1',
        },
         '#dyld_shared_cache_armv6':{
             # pop {r0-r3, pc}
