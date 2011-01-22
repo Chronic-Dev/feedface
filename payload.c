@@ -12,14 +12,7 @@
 #include <sys/fcntl.h>
 #include <sys/stat.h>
 #include "payload.h"
-
-void* _memcpy(void* dest, const void* src, size_t n) {
-	char* dst8 = (char*)dest;
-	char* src8 = (char*)src;
-
-	while (n--) *dst8++ = *src8++;
-	return dest;
-}
+#include "patching.h"
 
 void prepare_vndevice() {
 	struct vn_ioctl vn;
@@ -67,18 +60,6 @@ void dump(void *addr, unsigned int size) {
 	for (i = 0; i < count; i+=4) {
 		kprintf("%08x %08x %08x %08x\n", daddr[i], daddr[i+1], daddr[i+2], daddr[i+3]);
 	}
-}
-
-int mem8eq(void * addr, unsigned char* data) {
-	unsigned int *p1 = (unsigned int *) addr;
-	unsigned int *p2 = (unsigned int *) data;
-	return (*p1==*p2 && p1[1]==p2[1]);
-}
-
-int mem16eq(void * addr, unsigned char* data) {
-	unsigned int *p1 = (unsigned int *) addr;
-	unsigned int *p2 = (unsigned int *) data;
-	return (*p1==*p2 && p1[1]==p2[1] && p1[2]==p2[2] && p1[3]==p2[3]);
 }
 
 int patch_kernel(unsigned char* address, unsigned int size) {
@@ -215,8 +196,13 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 	return 0;
 }
 
-void real_payload() {
+int patch_sandbox(void* address, unsigned int size) {
+	kprintf("'bad opco' : %08x\n", memfind8(address, size, "bad opco"));	
+}
+
+static __attribute__ ((noinline)) void real_payload() {
 	patch_kernel((void*) 0x80000000, 0xA00000);
+	patch_sandbox((void*) 0x80000000, 0xA00000);
 }
 
 void payload() {

@@ -1,5 +1,5 @@
-#ifndef COMMON_H
-#define COMMON_H
+#ifndef PAYLOAD_H
+#define PAYLOAD_H
 
 #ifdef __cplusplus
 extern "C" {
