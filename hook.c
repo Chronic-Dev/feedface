@@ -2,7 +2,7 @@
 #include "patching.h"
 
 static void hook2() {
-	//IOLog("hooked %08x %08x %08x\n");
+	IOLog("hooked %08x %08x %08x %08x\n");
 }
 
 __attribute ((naked, flatten)) void hook() {
@@ -34,22 +34,10 @@ __attribute ((naked, flatten)) void hook() {
 	asm (
 	"pop {r4}\n\t"
 	"mov lr, r4\n\t"
-	//"add r5, #7\n\t" // thumb
 	"add r5, #4\n\t" // arm
 	"mov r12, r5\n\t"
 	"pop {r4-r5}\n\t"
 	);
-
-	// kprintf function prolog
-	/*
-	asm (
-	"push {r0-r3}\n\t"
-	"push {r4-r7,lr}\n\t"
-	"add r7, sp, #0xc\n\t"
-	"sub sp, #4\n\t"
-	"mov r3, #0\n\t"
-	);
-	*/
 
 	// original hooked function prolog converted to thumb
 	asm (
@@ -80,15 +68,6 @@ static unsigned int hook_armbx(void *addr, void* to) {
 	return 5 * 4;
 }
 
-static unsigned int hook_thumbbx(void *addr, void* to) {
-	((unsigned short *) addr)[0] = 0xb430;         // PUSH {R4-R5}
-	((unsigned short *) addr)[1] = 0x4c01;         // LDR R4, =addr
-	((unsigned short *) addr)[2] = 0x467d;         // MOV R5, PC
-	((unsigned short *) addr)[3] = 0x4720;         // BX R4
-	((unsigned int   *) addr)[2] = (unsigned int) to;
-	return 3 * 4;
-}
-
 void hook_arm(void *addr, void* to) {
         unsigned int addrhook = (unsigned int) to;
         if (addrhook % 2 !=0) addrhook = addrhook - 1;
@@ -101,22 +80,7 @@ void hook_arm(void *addr, void* to) {
 	invalidate_icache(kbuf, hsize, 0);
 }
 
-/*
-void hook_thumb(void *addr, void* to) {
-        unsigned int addrhook = (unsigned int) to;
-        if (addrhook % 2 !=0) addrhook = addrhook - 1;
-	unsigned int hsize = (unsigned int) memfind4((void*) addrhook, 0x1000, 0xfeedface) - addrhook;
-	hsize += 0x100; // there's pool data after the payload
-	unsigned char* kbuf = (unsigned char*) kalloc(hsize);
-        _memcpy(kbuf, (void*) addrhook, hsize);
-	hook_thumbbx(addr, (void *) (kbuf + 1));
-	flush_dcache(kbuf, hsize, 0);
-	invalidate_icache(kbuf, hsize, 0);
-}
-*/
-
 int patch_sandbox(void* address, unsigned int size) {
-	//hook_thumb((void *) 0x801DCCCC, hook);
 	hook_arm((void *) 0x803D1B94, hook);
 }
 
