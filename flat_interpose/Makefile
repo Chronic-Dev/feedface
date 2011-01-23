@@ -6,7 +6,7 @@ LD=$(PLATFORM)/Developer/usr/bin/ld
 AS=$(PLATFORM)/Developer/usr/bin/as
 
 CCFLAGS=-arch armv6 -isysroot=$(SDK) -I./include -I$(SDK)/usr/include -L$(SDK)/usr/lib
-CCFLAGS_DYLIB=$(CCFLAGS) -dynamiclib -segaddr __DATA 0x11130000 -segaddr __TEXT 0x11120000
+CCFLAGS_DYLIB=$(CCFLAGS) -dynamiclib -segaddr __DATA 0x11130000 -segaddr __TEXT 0x11120000 -segprot __TEXT rw rw
 
 all: flat_interpose_placeholders.dylib kern_sploit
 

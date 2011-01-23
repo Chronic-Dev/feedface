@@ -56,12 +56,6 @@ fi = fi.replace(struct.pack("<L", 0xFEED0007),pack_adjust_off(cache['k7']))
 fi = fi.replace(struct.pack("<L", 0xFEED0011),pack_adjust_off(cache['k11']))
 fi = fi.replace(struct.pack("<L", 0xFEED0012),pack_adjust_off(cache['k12']))
 
-"""
-hack: remove +x permission from text segment maxprot/curprot
-we should probably craft the whole dylib but i was too lazy :)
-"""
-fi = fi[:0x44] + "0300000003000000".decode("hex") + fi[0x44+8:]
-
 f=open("../flat_interpose.dylib","wb")
 f.write(fi)
 f.close()
