@@ -14,6 +14,7 @@ extern "C" {
 #define IOLog ((void (*)(char *fmt, ...)) 0x801A6BE9)
 #define kprintf ((void (*)(char *fmt, ...)) 0x801DCCCD)
 #define kalloc ((void *(*)(unsigned int)) 0x80019E2D)
+#define copyin ((int (*)(const void *, void *, size_t)) 0x80067C84)
 
 extern void hook();
 

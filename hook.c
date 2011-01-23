@@ -2,10 +2,11 @@
 #include "patching.h"
 
 static void hook2() {
-	//IOLog("in hook2.\n");
+	//IOLog("hooked %08x %08x %08x\n");
 }
 
 __attribute ((naked, flatten)) void hook() {
+	// hook: save all registers
 	asm (
 	"push {r0-r7, lr}\n\t"
 	"mov r4, r8\n\t"
@@ -18,7 +19,8 @@ __attribute ((naked, flatten)) void hook() {
 
 	hook2();
 
-        asm (
+	// hook: restore all registers
+	asm (
 	"add sp, #4\n\t"
 	"pop {r4-r7}\n\t"
 	"mov r8, r4\n\t"
@@ -26,27 +28,15 @@ __attribute ((naked, flatten)) void hook() {
 	"mov r10, r6\n\t"
 	"mov r11, r7\n\t"
 	"pop {r0-r7}\n\t"
-	"add r5, #7\n\t"
-	//"add r5, #8\n\t"
-	"mov r12, r5\n\t"
-	"pop {r4}\n\t"
-	"mov lr, r4\n\t" // original lr restored
-	"pop {r4-r5}\n\t" // orginal r4,r5 restored
 	);
 
-	/*
-	// original sandox hooked function prolog (converted to thumb)
+	// prepare r12 for jump, restore original r4 & r5
 	asm (
-	"push {r4-r7, lr}\n\t"
-	"add r7, sp, #0xc\n\t"
-	"mov r4, r8\n\t"
-	"mov r5, r10\n\t"
-	"mov r6, r11\n\t"
-	"push {r4-r6}\n\t"
-	"sub sp, #0xfc\n\t"
-	"mov r10, r0\n\t"
+	"add r5, #7\n\t"
+	"mov r12, r5\n\t"
+	"pop {r4-r5}\n\t"
 	);
-	*/
+
 	// original hooked function prolog
 	asm (
 	"push {r0-r3}\n\t"
@@ -56,6 +46,7 @@ __attribute ((naked, flatten)) void hook() {
 	"mov r3, #0\n\t"
 	);
 
+	// return to original function after overwritten prolog
 	asm (
 	"bx r12\n\t"
 	"nop\n\t"
@@ -88,8 +79,9 @@ void hook_thumb(void *addr, void* to) {
 	hsize += 0x100; // there's pool data after the payload
 	unsigned char* kbuf = (unsigned char*) kalloc(hsize);
         _memcpy(kbuf, (void*) addrhook, hsize);
-	hook_thumbbx(addr, (void *) (kbuf + 1));
-	//hook_thumbbx(addr, (void *) (addrhook + 1));
+	hook_thumbbx(addr, (void *) (addrhook + 1));
+	//copyin((void *) addrhook, kbuf, hsize);
+	//hook_thumbbx(addr, (void *) (kbuf + 1));
 }
 
 void hook_arm(void *addr, void* to) {
