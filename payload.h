@@ -16,9 +16,7 @@ extern "C" {
 #define kalloc ((void *(*)(unsigned int)) 0x80019E2D)
 #define flush_dcache ((void (*)(void *addr, unsigned size, int phys)) 0x8005FD41)
 #define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005FFB8)
-//#define copyin ((int (*)(const void *, void *, size_t)) )
-//#define lck_rw_lock_exclusive ((void (*)(void *)) )
-//#define lck_rw_done ((void (*)(void *)) )
+#define sb_evaluate 0x803D1B94
 
 extern void hook();
 

@@ -1,10 +1,6 @@
 #include "payload.h"
 #include "patching.h"
 
-static void hook2() {
-	IOLog("hooked %08x %08x %08x %08x\n");
-}
-
 __attribute ((naked, flatten)) void hook() {
 	// hook: save all registers
 	asm (
@@ -17,7 +13,7 @@ __attribute ((naked, flatten)) void hook() {
 	"sub sp, #4\n\t"
 	);
 
-	hook2();
+	// -- we can call other c functions there --
 
 	// hook: restore all registers
 	asm (
@@ -51,6 +47,23 @@ __attribute ((naked, flatten)) void hook() {
 	"mov r10, r0\n\t"
 	);
 
+	// that path is ok ! :-)
+	asm (
+	"mov r1, #0\n\t"
+	"mov r2, #8\n\t"
+	// original hooked function epilog converted to thumb
+	"mov r0, r10\n\t"
+	"str r1, [r0]\n\t"
+	"strb r2, [r0,#4]\n\t"
+	"add sp, #0xfc\n\t"
+	"pop {r4-r6}\n\t"
+	"mov r8, r4\n\t"
+	"mov r10, r5\n\t"
+	"mov r11, r6\n\t"
+	"pop {r4-r7, pc}\n\t"
+	);
+
+	// -- the return to hooked function won't happen at that time !
 	// return to original function after overwritten prolog
 	asm (
 	"bx r12\n\t"
@@ -72,7 +85,7 @@ void hook_arm(void *addr, void* to) {
         unsigned int addrhook = (unsigned int) to;
         if (addrhook % 2 !=0) addrhook = addrhook - 1;
 	unsigned int hsize = (unsigned int) memfind4((void*) addrhook, 0x1000, 0xfeedface) - addrhook;
-	hsize += 0x100; // there's pool data after the payload
+	hsize += 0x100; // there's maybe pool data after the payload
 	unsigned char* kbuf = (unsigned char*) kalloc(hsize);
         _memcpy(kbuf, (void*) addrhook, hsize);
 	hook_armbx(addr, (void *) (kbuf + 1));
@@ -81,6 +94,6 @@ void hook_arm(void *addr, void* to) {
 }
 
 int patch_sandbox(void* address, unsigned int size) {
-	hook_arm((void *) 0x803D1B94, hook);
+	hook_arm((void *) sb_evaluate, hook);
 }
 
