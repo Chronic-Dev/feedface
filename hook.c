@@ -73,13 +73,12 @@ __attribute ((naked, flatten)) void hook() {
 	);
 }
 
-static unsigned int hook_armbx(void *addr, void* to) {
+static void hook_armbx(void *addr, void* to) {
 	((unsigned int   *) addr)[0] = 0xe92d0030;         // PUSH {R4-R5}
 	((unsigned int   *) addr)[1] = 0xe59f4004;         // LDR R4, =addr
 	((unsigned int   *) addr)[2] = 0xe1a0500f;         // MOV R5, PC
 	((unsigned int   *) addr)[3] = 0xe12fff14;         // BX R4
 	((unsigned int   *) addr)[4] = (unsigned int) to;
-	return 5 * 4;
 }
 
 void hook_arm(void *addr, void* to) {
