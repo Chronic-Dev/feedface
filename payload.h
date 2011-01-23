@@ -5,15 +5,17 @@
 extern "C" {
 #endif
 
+#include <sys/types.h>
+#include <sys/mount.h>
+
 /*
  * CHANGE THESE!!!!!
  */
-#define kprintf ((void (*)(char *fmt, ...)) 0x801A6BE9)
+#define IOLog ((void (*)(char *fmt, ...)) 0x801A6BE9)
+#define kprintf ((void (*)(char *fmt, ...)) 0x801DCCCD)
 #define kalloc ((void *(*)(unsigned int)) 0x80019E2D)
 
-//#define copyin ((void (*)(void *uaddr, void *kaddr, size_t len)) 0x80066c61)
-//#define lck_rw_lock_exclusive ((void (*)(void *)) 0x80061bc1)
-//#define lck_rw_done ((void (*)(void *)) 0x80061ec1)
+extern void hook();
 
 struct hfs_mount_args {
     char     *fspec;

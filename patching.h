@@ -28,7 +28,10 @@ extern inline int mem16eq(const void * addr, const void* data) {
 int _memcmp(const void *s1, const void *s2, size_t n);
 void* _memcpy(void* dest, const void* src, size_t n);
 void* memfind(const void* data, unsigned int size, const void* search, unsigned int n);
+void* memfind4(const void* data, unsigned int size, unsigned int search);
 void* memfind8(const void* data, unsigned int size, const void* search);
+void* memfind16(const void* data, unsigned int size, const void* search);
+void* memfindref8(const void* data, unsigned int size, const void* search);
 
 #ifdef __cplusplus
 }

