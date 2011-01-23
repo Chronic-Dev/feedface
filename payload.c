@@ -52,16 +52,6 @@ void mount_evil_hfs() {
 	printf("Payload returned successfully.\n");
 }
 
-void dump(void *addr, unsigned int size) {
-	unsigned int i;
-	unsigned int count = size >> 2;
-	unsigned int *daddr = (unsigned int *) addr;
-	
-	for (i = 0; i < count; i+=4) {
-		IOLog("%08x %08x %08x %08x\n", daddr[i], daddr[i+1], daddr[i+2], daddr[i+3]);
-	}
-}
-
 int patch_kernel(unsigned char* address, unsigned int size) {
 	unsigned int target = 0;
 	/*

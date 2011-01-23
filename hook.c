@@ -1,12 +1,14 @@
 #include "payload.h"
 
+#define ARM_BX_R12 0xe12fff1c
+#define THUMB_BX_R12 0x4760
 
 static void hook2() {
 	IOLog("hooked %08x %08x %08x\n");
 }
 
 __attribute ((naked, flatten)) void hook() {
-        asm (
+	asm (
 	"push {r0-r7, lr}\n\t"
 	"mov r4, r8\n\t"
 	"mov r5, r9\n\t"
@@ -39,42 +41,64 @@ __attribute ((naked, flatten)) void hook() {
 	"push {r4-r7,lr}\n\t"
 	"add r7, sp, #0xc\n\t"
 	"sub sp, #4\n\t"
-	"mov r3, #0\n\t"
+	"mov r3, #0\n\t" // ldr here chanded to this r3=0
 	);
 
 	asm (
 	"bx r12\n\t"
+	"nop\n\t"
+	".word 0xfeedface\n\t"
 	);
 }
 
-void hook_armbx(void *addr, void* to) {
+unsigned int hook_armbx(void *addr, void* to) {
 	((unsigned int   *) addr)[0] = 0xe92d0030;         // PUSH {R4-R5}
 	((unsigned int   *) addr)[1] = 0xe59f4004;         // LDR R4, =addr
 	((unsigned int   *) addr)[2] = 0xe1a0500f;         // MOV R5, PC
 	((unsigned int   *) addr)[3] = 0xe12fff14;         // BX R4
 	((unsigned int   *) addr)[4] = (unsigned int) to;
+	return 5 * 4;
 }
 
-void hook_thumbbx(void *addr, void* to) {
+unsigned int hook_thumbbx(void *addr, void* to) {
 	((unsigned short *) addr)[0] = 0xb430;         // PUSH {R4-R5}
 	((unsigned short *) addr)[1] = 0x4c01;         // LDR R4, =addr
 	((unsigned short *) addr)[2] = 0x467d;         // MOV R5, PC
 	((unsigned short *) addr)[3] = 0x4720;         // BX R4
 	((unsigned int   *) addr)[2] = (unsigned int) to;
+	return 3 * 4;
+}
+
+void dump(void *addr, unsigned int size) {
+	unsigned int i;
+	unsigned int count = size >> 2;
+	unsigned int *daddr = (unsigned int *) addr;
+
+	for (i = 0; i < count; i+=4) {
+		IOLog("%08x %08x %08x %08x\n", daddr[i], daddr[i+1], daddr[i+2], daddr[i+3]);
+	}
+}
+
+void hook_thumb(void *addr, void* to) {
+        unsigned int addrhook = (unsigned int) to;
+        if (addrhook % 2 !=0) addrhook = addrhook - 1;
+	unsigned int hsize = (unsigned int) memfind4((void*) addrhook, 0x1000, 0xfeedface) - addrhook;
+	/* pod2g this way can't work because of ldr's in the original code pointing to nowhere
+	unsigned int tail_size = hook_thumbbx(addr, (void *) (addrhook + 1));
+	unsigned char* kbuf = (unsigned char*) kalloc(hsize + tail_size + 8);
+	_memset(kbuf, 0, hsize + tail_size + 8);
+        _memcpy(kbuf, (void*) addrhook, hsize);
+	_memcpy(&kbuf[hsize], addr, tail_size);
+	*((unsigned short *) &kbuf[hsize + tail_size]) = THUMB_BX_R12;
+	*/
+	unsigned char* kbuf = (unsigned char*) kalloc(hsize);
+        _memcpy(kbuf, (void*) addrhook, hsize);
+	hook_thumbbx(addr, (void *) (addrhook + 1));
 }
 
 int patch_sandbox(void* address, unsigned int size) {
-        void* ref = (void *) 0x801DCCCC;
+	hook_thumb((void *) 0x801DCCCC, hook);
 
-        void* kbuf = kalloc(0x1000);
-        unsigned int addrhook = (unsigned int) hook;
-        if (addrhook % 2 !=0) addrhook = addrhook - 1;
-
-        _memcpy(kbuf, (void*) addrhook, 0x1000);
-
-	hook_thumbbx(ref, hook);
-
-        IOLog("sandbox hooked sub : 0x%08x %08x %08x\n", ref, addrhook, kbuf);
         kprintf("coucou\n");
 }
 
