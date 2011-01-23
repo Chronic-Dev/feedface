@@ -14,7 +14,11 @@ extern "C" {
 #define IOLog ((void (*)(char *fmt, ...)) 0x801A6BE9)
 #define kprintf ((void (*)(char *fmt, ...)) 0x801DCCCD)
 #define kalloc ((void *(*)(unsigned int)) 0x80019E2D)
-#define copyin ((int (*)(const void *, void *, size_t)) 0x80067C84)
+#define flush_dcache ((void (*)(void *addr, unsigned size, int phys)) 0x8005FD41)
+#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005FFB8)
+//#define copyin ((int (*)(const void *, void *, size_t)) )
+//#define lck_rw_lock_exclusive ((void (*)(void *)) )
+//#define lck_rw_done ((void (*)(void *)) )
 
 extern void hook();
 

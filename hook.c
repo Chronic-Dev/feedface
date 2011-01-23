@@ -1,5 +1,6 @@
 #include "payload.h"
 #include "patching.h"
+//#include <sys/mman.h>
 
 static void hook2() {
 	//IOLog("hooked %08x %08x %08x\n");
@@ -30,8 +31,10 @@ __attribute ((naked, flatten)) void hook() {
 	"pop {r0-r7}\n\t"
 	);
 
-	// prepare r12 for jump, restore original r4 & r5
+	// restores original lr, prepare r12 for jump, restore original r4 & r5
 	asm (
+	"pop {r4}\n\t"
+	"mov lr, r4\n\t"
 	"add r5, #7\n\t"
 	"mov r12, r5\n\t"
 	"pop {r4-r5}\n\t"
@@ -79,19 +82,9 @@ void hook_thumb(void *addr, void* to) {
 	hsize += 0x100; // there's pool data after the payload
 	unsigned char* kbuf = (unsigned char*) kalloc(hsize);
         _memcpy(kbuf, (void*) addrhook, hsize);
-	hook_thumbbx(addr, (void *) (addrhook + 1));
-	//copyin((void *) addrhook, kbuf, hsize);
-	//hook_thumbbx(addr, (void *) (kbuf + 1));
-}
-
-void hook_arm(void *addr, void* to) {
-        unsigned int addrhook = (unsigned int) to;
-        if (addrhook % 2 !=0) addrhook = addrhook - 1;
-	unsigned int hsize = (unsigned int) memfind4((void*) addrhook, 0x1000, 0xfeedface) - addrhook;
-	hsize += 0x100; // there's pool data after the payload
-	unsigned char* kbuf = (unsigned char*) kalloc(hsize);
-	_memcpy(kbuf, (void*) addrhook, hsize);
-	hook_armbx(addr, (void *) (kbuf + 1));
+	hook_thumbbx(addr, (void *) (kbuf + 1));
+	flush_dcache(kbuf, hsize, 0);
+	invalidate_icache(kbuf, hsize, 0);
 }
 
 int patch_sandbox(void* address, unsigned int size) {
