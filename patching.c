@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "patching.h"
+#include "payload.h"
 
 void* _memset(void* b, int c, size_t n) {
         char* dst8 = (char*)b;
@@ -85,4 +86,14 @@ void* memfindref8(const void* data, unsigned int size, const void* search) {
 	void *ref = memfind8(data, size, search);
 	if (ref==NULL) return NULL;
 	return memfind4(data, size, (unsigned int) ref);
+}
+
+void dump(void *addr, unsigned int size) {
+	unsigned int i;
+	unsigned int count = size >> 2;
+	unsigned int *daddr = (unsigned int *) addr;
+
+	for (i = 0; i < count; i+=4) {
+		IOLog("%08x %08x %08x %08x\n", daddr[i], daddr[i+1], daddr[i+2], daddr[i+3]);
+	}
 }

@@ -32,6 +32,7 @@ void* memfind4(const void* data, unsigned int size, unsigned int search);
 void* memfind8(const void* data, unsigned int size, const void* search);
 void* memfind16(const void* data, unsigned int size, const void* search);
 void* memfindref8(const void* data, unsigned int size, const void* search);
+void dump(void *addr, unsigned int size);
 
 #ifdef __cplusplus
 }

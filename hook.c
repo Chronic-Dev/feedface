@@ -1,4 +1,5 @@
 #include "payload.h"
+#include "patching.h"
 
 #define ARM_BX_R12 0xe12fff1c
 #define THUMB_BX_R12 0x4760
@@ -69,28 +70,10 @@ unsigned int hook_thumbbx(void *addr, void* to) {
 	return 3 * 4;
 }
 
-void dump(void *addr, unsigned int size) {
-	unsigned int i;
-	unsigned int count = size >> 2;
-	unsigned int *daddr = (unsigned int *) addr;
-
-	for (i = 0; i < count; i+=4) {
-		IOLog("%08x %08x %08x %08x\n", daddr[i], daddr[i+1], daddr[i+2], daddr[i+3]);
-	}
-}
-
 void hook_thumb(void *addr, void* to) {
         unsigned int addrhook = (unsigned int) to;
         if (addrhook % 2 !=0) addrhook = addrhook - 1;
 	unsigned int hsize = (unsigned int) memfind4((void*) addrhook, 0x1000, 0xfeedface) - addrhook;
-	/* pod2g this way can't work because of ldr's in the original code pointing to nowhere
-	unsigned int tail_size = hook_thumbbx(addr, (void *) (addrhook + 1));
-	unsigned char* kbuf = (unsigned char*) kalloc(hsize + tail_size + 8);
-	_memset(kbuf, 0, hsize + tail_size + 8);
-        _memcpy(kbuf, (void*) addrhook, hsize);
-	_memcpy(&kbuf[hsize], addr, tail_size);
-	*((unsigned short *) &kbuf[hsize + tail_size]) = THUMB_BX_R12;
-	*/
 	unsigned char* kbuf = (unsigned char*) kalloc(hsize);
         _memcpy(kbuf, (void*) addrhook, hsize);
 	hook_thumbbx(addr, (void *) (addrhook + 1));
