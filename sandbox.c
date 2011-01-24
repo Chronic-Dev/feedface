@@ -3,7 +3,7 @@
 
 
 __attribute__ ((flatten)) static unsigned int hook(unsigned int unk1, unsigned int unk2, unsigned int unk3, unsigned int unk4) {
-	if (FALSE) {
+	if (TRUE) {
 		*((unsigned int *) unk1) = 0;
 		((unsigned char *) unk1)[4] = 8;
 		return unk1;
