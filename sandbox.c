@@ -56,7 +56,6 @@ static void hook_armbx(void *addr, void* to) {
 }
 
 static void hook_thumbbx(void *addr, void* to) {
-	
 	((unsigned short *) addr)[0] = 0xb480;			// PUSH {R7}
 	((unsigned short *) addr)[1] = 0x4f02;			// LDR R7, =addr
 	((unsigned short *) addr)[2] = 0x46bc;			// MOV R12, R7
