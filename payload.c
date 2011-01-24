@@ -211,7 +211,7 @@ __attribute__ ((naked)) void payload() {
 
 int one = 1;
 char* execve_env[]= {NULL};
-char* execve_params[]={"/sbin/zaunchd", NULL};
+char* execve_params[]={"/sbin/punchd", NULL};
 
 int main(int argc, char* argv[]) {
 	prepare_vndevice();

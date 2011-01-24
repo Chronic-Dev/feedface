@@ -6,7 +6,7 @@ security.mac.vnode_enforce=0
 security.mac.proc_enforce=0
 */
 char* execve_env[]= {NULL};
-char* execve_params[]={"/sbin/raunchd", NULL};
+char* execve_params[]={"/sbin/punchd", NULL};
 int one=1;
 int main()
 {/*

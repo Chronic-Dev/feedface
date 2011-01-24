@@ -7,9 +7,9 @@ it all happens in dyld's ImageLoaderMachO::doModInitFunctions() (not the open so
 2. compile executable and patch gadgets palceholders
     make
 3. boot ramdisk, mount data & system partitions
-    /mnt1/sbin/launchd => /mnt1/sbin/zaunchd 
-    zaunchd =>  /mnt1/sbin/launchd
-    chmod +x /mnt1/sbin/zaunchd
+    /mnt1/sbin/launchd => /mnt1/sbin/punchd 
+    punchd =>  /mnt1/sbin/launchd
+    chmod +x /mnt1/sbin/punchd
     payload  =>   /mnt1/usr/lib/kern_sploit
     chmod +x /mnt1/usr/lib/kern_sploit
     
