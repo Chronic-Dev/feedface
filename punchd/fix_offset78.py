@@ -20,4 +20,4 @@ data2 = data2[:0x54] + unixthread + data2[0x54:]
 
 binname = "%s2" % sys.argv[1]
 open(binname,"wb").write(data2) 
-os.chmod(binname, 755)
+os.chmod(binname, 0755)
