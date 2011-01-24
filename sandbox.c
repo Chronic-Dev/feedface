@@ -1,26 +1,26 @@
 #include "payload.h"
 #include "patching.h"
 
-
-__attribute__ ((flatten)) static unsigned int hook(unsigned int unk1, unsigned int unk2, unsigned int unk3, unsigned int unk4) {
+__attribute__ ((flatten)) static unsigned int sb_evaluate_hook_arm(unsigned int unk1, unsigned int unk2, unsigned int unk3, unsigned int unk4) {
 	if (TRUE) {
 		*((unsigned int *) unk1) = 0;
 		((unsigned char *) unk1)[4] = 8;
 		return unk1;
 	} else {
 		asm (
-		// sb_evaluate overwritten epilog
+		// hooked function overwritten epilog
 		"push {r4-r7, lr}\n\t"
 		"add r7, sp, #0xc\n\t"
 		"mov r4, r8\n\t"
 		"mov r5, r10\n\t"
 		"mov r6, r11\n\t"
 		"push {r4-r6}\n\t"
-		// call sb_evaluate + 0xc
+		// original parameters
 		"mov r0, %[unk1]\n\t"
 		"mov r1, %[unk2]\n\t"
 		"mov r2, %[unk3]\n\t"
 		"mov r3, %[unk4]\n\t"
+		// adjust the LR and call hooked function
 		"mov r12, %[addr]\n\t"
 		"mov r5, sp\n\t"
 		"add r5, #0x1c\n\t"
@@ -38,15 +38,34 @@ __attribute__ ((flatten)) static unsigned int hook(unsigned int unk1, unsigned i
 	}
 }
 
+__attribute__ ((flatten)) static unsigned int sb_evaluate_hook_thumb(unsigned int unk1, unsigned int unk2, unsigned int unk3, unsigned int unk4) {
+	// we'll do this one after arm version's finished.
+	*((unsigned int *) unk1) = 0;
+	((unsigned char *) unk1)[4] = 8;
+	return unk1;
+}
+
 static void hook_armbx(void *addr, void* to) {
-	((unsigned int   *) addr)[0] = 0xe59fc000;         // LDR R12, =addr
-	((unsigned int   *) addr)[1] = 0xe12fff1c;         // BX R12
+	((unsigned int   *) addr)[0] = 0xe59fc000;		// LDR R12, =addr
+	((unsigned int   *) addr)[1] = 0xe12fff1c;		// BX R12
 	((unsigned int   *) addr)[2] = (unsigned int) to;
 }
 
-static void hook_arm(void *addr, void* to) {
-        unsigned int addrhook = (unsigned int) to;
-        if (addrhook % 2 !=0) addrhook = addrhook - 1;
+static void hook_thumbbx(void *addr, void* to) {
+	((unsigned short *) addr)[0] = 0x4f00;			// LDR R7, =addr
+	((unsigned short *) addr)[1] = 0x4738;			// BX R7
+	((unsigned int   *) addr)[1] = (unsigned int) to;
+}
+
+static void hook_arm_thumb(void *addr, void* to, void* to_thumb) {
+        unsigned int addrhook;
+        if ((unsigned int) addr % 2 !=0) {
+        	addrhook = (unsigned int) to;
+        } else {
+        	addrhook = (unsigned int) to_thumb;
+	}
+
+	if (addrhook % 2 !=0) addrhook = addrhook - 1;
 	unsigned int hsize = 0x1000;
 
 	unsigned char* kbuf = (unsigned char*) kalloc(hsize);
@@ -55,19 +74,28 @@ static void hook_arm(void *addr, void* to) {
 		return;
 	}
 	_memcpy(kbuf, (void*) addrhook, hsize);
+	
 	volatile unsigned int *beefface = (unsigned int*) memfind4((void*) kbuf, hsize, 0xbeefface);
 	if (beefface==NULL) {
 		IOLog("Can't find the hooked sub address placeholder.\n");
 		return;
 	}
 
-	*beefface = ((unsigned int) addr) + 0xc;
+        if ((unsigned int) addr % 2 !=0) {
+		*beefface = ((unsigned int) addr) + 0x8;
+	} else {
+		*beefface = ((unsigned int) addr) + 0xc;
+	}
 	flush_dcache(kbuf, hsize, 0);
-	hook_armbx(addr, (void *) (kbuf + 1));
+        if ((unsigned int) addr % 2 !=0) {
+		hook_thumbbx(addr -1, (void *) (kbuf + 1));
+	} else {
+		hook_armbx(addr, (void *) (kbuf + 1));
+	}
 	invalidate_icache(kbuf, hsize, 0);
 }
 
 int patch_sandbox(void* address, unsigned int size) {
-	hook_arm((void *) sb_evaluate, hook);
+	hook_arm_thumb((void *) sb_evaluate, sb_evaluate_hook_thumb, sb_evaluate_hook_arm);
 }
 
