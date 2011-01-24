@@ -18,8 +18,6 @@ extern "C" {
 #define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005FFB8)
 #define sb_evaluate 0x803D1B94
 
-extern void hook();
-
 struct hfs_mount_args {
     char     *fspec;
     uid_t     hfs_uid;
