@@ -63,8 +63,8 @@ static void hook_arm(void *addr, void* to) {
 
 	*beefface = ((unsigned int) addr) + 0xc;
 	flush_dcache(kbuf, hsize, 0);
-	invalidate_icache(kbuf, hsize, 0);
 	hook_armbx(addr, (void *) (kbuf + 1));
+	invalidate_icache(kbuf, hsize, 0);
 }
 
 int patch_sandbox(void* address, unsigned int size) {
