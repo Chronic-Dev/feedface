@@ -21,7 +21,6 @@
         'is_armv7': 1,
 
         '#dyld_shared_cache_armv7':{
-            '@binary': '/Users/admin/dyld_shared_cache_armv7',
             # pop {r0-r3, pc}
             'k7': '@ + 0f bd',
             # pop {r4-r7, pc}
