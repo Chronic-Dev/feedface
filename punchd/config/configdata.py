@@ -57,7 +57,7 @@
             # mov r0, #0; bx lr  (dyld bin is executable?)
             'k102' : '@ + 00 20 70 47',
             # SUB SP, R7, #0 ; pop {R7,PC}
-            'k103' : '@ + A7 F1 00 0D 80 BD 00 BF',
+            'k103' : '@ - 00 D0 47 E2 80 80 bd E8',
         },
 
     },
