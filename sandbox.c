@@ -60,9 +60,9 @@ static void hook_thumbbx(void *addr, void* to) {
 static void hook_arm_thumb(void *addr, void* to, void* to_thumb) {
         unsigned int addrhook;
         if ((unsigned int) addr % 2 !=0) {
-        	addrhook = (unsigned int) to;
-        } else {
         	addrhook = (unsigned int) to_thumb;
+        } else {
+        	addrhook = (unsigned int) to;
 	}
 
 	if (addrhook % 2 !=0) addrhook = addrhook - 1;
@@ -77,14 +77,13 @@ static void hook_arm_thumb(void *addr, void* to, void* to_thumb) {
 	
 	volatile unsigned int *beefface = (unsigned int*) memfind4((void*) kbuf, hsize, 0xbeefface);
 	if (beefface==NULL) {
-		IOLog("Can't find the hooked sub address placeholder.\n");
-		return;
-	}
-
-        if ((unsigned int) addr % 2 !=0) {
-		*beefface = ((unsigned int) addr) + 0x8;
+		IOLog("Can't find the hooked sub address placeholder. Can't tell if it's attended or not.\n");
 	} else {
-		*beefface = ((unsigned int) addr) + 0xc;
+	        if ((unsigned int) addr % 2 !=0) {
+		*beefface = ((unsigned int) addr) + 0x8;
+		} else {
+			*beefface = ((unsigned int) addr) + 0xc;
+		}
 	}
 	flush_dcache(kbuf, hsize, 0);
         if ((unsigned int) addr % 2 !=0) {
@@ -96,6 +95,6 @@ static void hook_arm_thumb(void *addr, void* to, void* to_thumb) {
 }
 
 int patch_sandbox(void* address, unsigned int size) {
-	hook_arm_thumb((void *) sb_evaluate, sb_evaluate_hook_thumb, sb_evaluate_hook_arm);
+	hook_arm_thumb((void *) sb_evaluate, sb_evaluate_hook_arm, sb_evaluate_hook_thumb);
 }
 
