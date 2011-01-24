@@ -45,6 +45,10 @@ __attribute__ ((flatten)) static unsigned int sb_evaluate_hook_thumb(unsigned in
 	return unk1;
 }
 
+__attribute__ ((flatten)) static unsigned int kprintf_hook_thumb(unsigned int unk1, unsigned int unk2, unsigned int unk3, unsigned int unk4) {
+	IOLog("kprintf hooked !\n");
+}
+
 static void hook_armbx(void *addr, void* to) {
 	((unsigned int   *) addr)[0] = 0xe59fc000;		// LDR R12, =addr
 	((unsigned int   *) addr)[1] = 0xe12fff1c;		// BX R12
@@ -52,9 +56,14 @@ static void hook_armbx(void *addr, void* to) {
 }
 
 static void hook_thumbbx(void *addr, void* to) {
-	((unsigned short *) addr)[0] = 0x4f00;			// LDR R7, =addr
-	((unsigned short *) addr)[1] = 0x4738;			// BX R7
-	((unsigned int   *) addr)[1] = (unsigned int) to;
+	
+	((unsigned short *) addr)[0] = 0xb480;			// PUSH {R7}
+	((unsigned short *) addr)[1] = 0x4f02;			// LDR R7, =addr
+	((unsigned short *) addr)[2] = 0x46bc;			// MOV R12, R7
+	((unsigned short *) addr)[3] = 0xbc80;			// POP {R7}
+	((unsigned short *) addr)[4] = 0x4760;			// Bx R12
+	((unsigned short *) addr)[5] = 0x0000;
+	((unsigned int   *) addr)[3] = (unsigned int) to;
 }
 
 static void hook_arm_thumb(void *addr, void* to, void* to_thumb) {
@@ -80,7 +89,7 @@ static void hook_arm_thumb(void *addr, void* to, void* to_thumb) {
 		IOLog("Can't find the hooked sub address placeholder. Can't tell if it's attended or not.\n");
 	} else {
 	        if ((unsigned int) addr % 2 !=0) {
-		*beefface = ((unsigned int) addr) + 0x8;
+			*beefface = ((unsigned int) addr) + 0x10;
 		} else {
 			*beefface = ((unsigned int) addr) + 0xc;
 		}
@@ -96,5 +105,7 @@ static void hook_arm_thumb(void *addr, void* to, void* to_thumb) {
 
 int patch_sandbox(void* address, unsigned int size) {
 	hook_arm_thumb((void *) sb_evaluate, sb_evaluate_hook_arm, sb_evaluate_hook_thumb);
+	//hook_arm_thumb((void *) kprintf, NULL, kprintf_hook_thumb);
+	//kprintf("hook test\n");
 }
 
