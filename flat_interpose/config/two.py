@@ -28,7 +28,7 @@ myreps = {
     '_stat':                  launchd['12'],
 }
 
-f=open("../flat_interpose_placeholders.dylib", "rb")
+f=open("../flat_interpose2.dylib", "rb")
 fi=f.read()
 f.close()
 
@@ -40,7 +40,7 @@ BASE = 0
 def pack_adjust_off(off):
     return struct.pack("<L", ctypes.c_uint32(off - BASE).value)
 
-for s in commands.getoutput("nm ../flat_interpose_placeholders.dylib").splitlines():
+for s in commands.getoutput("nm ../flat_interpose2.dylib").splitlines():
     t = s.split()
     off = t[0]
     name = t[-1]
@@ -56,6 +56,6 @@ fi = fi.replace(struct.pack("<L", 0xFEED0007),pack_adjust_off(cache['k7']))
 fi = fi.replace(struct.pack("<L", 0xFEED0011),pack_adjust_off(cache['k11']))
 fi = fi.replace(struct.pack("<L", 0xFEED0012),pack_adjust_off(cache['k12']))
 
-f=open("../flat_interpose.dylib","wb")
+f=open("../flat_interpose22.dylib","wb")
 f.write(fi)
 f.close()
