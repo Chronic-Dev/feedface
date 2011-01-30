@@ -89,6 +89,8 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 	
 	for(i = 0; i < size; i+=2) {
 		paddress+=2;
+		//flash_dcache();
+		//flash_icache();
 
 		// Patch 1
 		if(mem16eq(paddress, "\x00\x00\x00\x00\x01\x00\x00\x00\x80\x00\x00\x00\x00\x00\x00\x00")) {
@@ -173,7 +175,7 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 			_memcpy(&address[target], "\x00\x20\x00\x20", 4);
 			continue;
 		}
-
+/*
 		// Patch 9
 		if(mem8eq(paddress, "\x85\x68\x00\x23\x02\x93\x01\x93") ||
 				mem8eq(paddress, "\x85\x68\x00\x23\x04\x93\x03\x93")) {
@@ -182,6 +184,7 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 			_memcpy(&address[target], "\x0B\xE0\xC0\x46", 4);
 			continue;
 		}
+*/
 	}
 	
 	return 0;
@@ -216,7 +219,8 @@ char* execve_params[]={"/sbin/punchd", NULL};
 
 int main(int argc, char* argv[]) {
 	// make sure this is disabled
-    sysctlbyname("security.mac.vnode_enforce", NULL, 0, &zero, sizeof(one));
+	sysctlbyname("security.mac.vnode_enforce", NULL, 0, &zero, sizeof(one));
+	sysctlbyname("vm.cs_validation", NULL, 0, &zero, sizeof(one));
 
 	prepare_vndevice();
 	mount_evil_hfs();

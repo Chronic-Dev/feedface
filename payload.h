@@ -12,7 +12,7 @@ extern "C" {
  * CHANGE THESE!!!!!
  */
 #define FW_421
-#define IPOD2G
+#define IPOD3G
 
 #ifdef FW_421
 
@@ -21,7 +21,7 @@ extern "C" {
 	#define kprintf ((void (*)(char *fmt, ...)) 0x801dd879)
 	#define kalloc ((void *(*)(unsigned int)) 0x80019021)
 	#define flush_dcache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e29d)
-	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e7cd)
+	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e7cc)
 	#define sb_evaluate 0xDEADBEEF // FIXME!!!
 #endif // IPHONE3GS
 
@@ -30,7 +30,7 @@ extern "C" {
 	#define kprintf ((void (*)(char *fmt, ...)) 0x801dd87d)
 	#define kalloc ((void *(*)(unsigned int)) 0x80019021)
 	#define flush_dcache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e29d)
-	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e7cd)
+	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e7cc)
 	#define sb_evaluate 0xDEADBEEF // FIXME!!!
 #endif // IPHONE4
 
@@ -57,7 +57,7 @@ extern "C" {
 	#define kprintf ((void (*)(char *fmt, ...)) 0x801dd87d)
 	#define kalloc ((void *(*)(unsigned int)) 0x80019021)
 	#define flush_dcache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e29d)
-	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e7cd)
+	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e7cc)
 	#define sb_evaluate 0xDEADBEEF // FIXME!!!
 #endif // IPOD4G
 
@@ -66,7 +66,7 @@ extern "C" {
 	#define kprintf ((void (*)(char *fmt, ...)) 0x801dd87d)
 	#define kalloc ((void *(*)(unsigned int)) 0x80019021)
 	#define flush_dcache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e29d)
-	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e7cd)
+	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e7cc)
 	#define sb_evaluate 0xDEADBEEF // FIXME!!!
 #endif // IPAD1G
 
@@ -75,7 +75,7 @@ extern "C" {
 	#define kprintf ((void (*)(char *fmt, ...)) 0x801dd87d)
 	#define kalloc ((void *(*)(unsigned int)) 0x80019021)
 	#define flush_dcache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e29d)
-	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e7cd)
+	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e7cc)
 	#define sb_evaluate 0xDEADBEEF // FIXME!!!
 #endif // APPLETV2G
 
