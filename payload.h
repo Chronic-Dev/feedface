@@ -48,8 +48,8 @@ extern "C" {
 	#define kprintf ((void (*)(char *fmt, ...)) 0x801dd879)
 	#define kalloc ((void *(*)(unsigned int)) 0x80019021)
 	#define flush_dcache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e29d)
-	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e7cd)
-	#define sb_evaluate 0xDEADBEEF // FIXME!!!
+	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e7cc)
+	#define sb_evaluate 0x803FD8B1
 #endif //IPOD3G
 
 #ifdef IPOD4G
