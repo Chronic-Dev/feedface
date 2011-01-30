@@ -8,22 +8,21 @@ __attribute__ ((flatten)) static unsigned int sb_evaluate_hook_arm(unsigned int 
 		return unk1;
 	} else {
 		asm (
-		// hooked function overwritten epilog
+		// original parameters
+		"mov r0, %[unk1]\n\t"
+		"mov r1, %[unk2]\n\t"
+		"mov r2, %[unk3]\n\t"
+		"mov r3, %[unk4]\n\t"
+		"mov r12, %[addr]\n\t"
+		// hooked function overwritten epilog (converted to thumb)
 		"push {r4-r7, lr}\n\t"
 		"add r7, sp, #0xc\n\t"
 		"mov r4, r8\n\t"
 		"mov r5, r10\n\t"
 		"mov r6, r11\n\t"
 		"push {r4-r6}\n\t"
-		// original parameters
-		"mov r0, %[unk1]\n\t"
-		"mov r1, %[unk2]\n\t"
-		"mov r2, %[unk3]\n\t"
-		"mov r3, %[unk4]\n\t"
 		// adjust the LR and call hooked function
-		"mov r12, %[addr]\n\t"
-		"mov r5, sp\n\t"
-		"add r5, #0x1c\n\t"
+		"add r5, r7, #0x4\n\t"
 		"mov r6, pc\n\t"
 		"add r6, #0x5\n\t"
 		"str r6, [r5]\n\t"
@@ -31,18 +30,52 @@ __attribute__ ((flatten)) static unsigned int sb_evaluate_hook_arm(unsigned int 
 		"mov %[ret], r0\n\t"
 		: [ret]"=r" (unk1)
 		: [unk1]"r" (unk1), [unk2]"r" (unk2), [unk3]"r" (unk3), [unk4]"r" (unk4), [addr]"r" (0xbeefface)
-		: "r4", "r5", "r6", "r7"
+		: "r0", "r1", "r2", "r3", "r12"
 		);
 	
 		return unk1;
 	}
 }
 
-__attribute__ ((flatten)) static unsigned int sb_evaluate_hook_thumb(unsigned int unk1, unsigned int unk2, unsigned int unk3, unsigned int unk4) {
+__attribute__ ((flatten)) static unsigned int sb_evaluate_hook_thumbv2(unsigned int unk1, unsigned int unk2, unsigned int unk3, unsigned int unk4) {
 	// we'll do this one after arm version's finished.
-	*((unsigned int *) unk1) = 0;
-	((unsigned char *) unk1)[4] = 8;
-	return unk1;
+	if (TRUE) {
+		*((unsigned int *) unk1) = 0;
+		((unsigned char *) unk1)[4] = 8;
+		return unk1;
+	} else {
+		asm (
+		// original parameters
+		"mov r0, %[unk1]\n\t"
+		"mov r1, %[unk2]\n\t"
+		"mov r2, %[unk3]\n\t"
+		"mov r3, %[unk4]\n\t"
+		"mov r12, %[addr]\n\t"
+		// hooked function overwritten epilog (converted to thumb)
+		"push {r4-r7, lr}\n\t"
+		"add r7, sp, #0xc\n\t"
+		"mov r4, r8\n\t"
+		"mov r5, r10\n\t"
+		"mov r6, r11\n\t"
+		"push {r4-r6}\n\t"
+		"sub sp, sp, #0x104\n\t"
+		"mov r10, r0\n\t"
+		"ldr r0, [r3, #0x2c]\n\t"
+		"mov r11, r1\n\t"
+		// adjust the LR and call hooked function
+		"add r5, r7, #0x4\n\t"
+		"mov r6, pc\n\t"
+		"add r6, #0x5\n\t"
+		"str r6, [r5]\n\t"
+		"bx r12\n\t"
+		"mov %[ret], r0\n\t"
+		: [ret]"=r" (unk1)
+		: [unk1]"r" (unk1), [unk2]"r" (unk2), [unk3]"r" (unk3), [unk4]"r" (unk4), [addr]"r" (0xbeefface)
+		: "r0", "r1", "r2", "r3", "r12"
+		);
+	
+		return unk1;
+	}
 }
 
 __attribute__ ((flatten)) static unsigned int kprintf_hook_thumb(unsigned int unk1, unsigned int unk2, unsigned int unk3, unsigned int unk4) {
@@ -103,7 +136,7 @@ static void hook_arm_thumb(void *addr, void* to, void* to_thumb) {
 }
 
 int patch_sandbox(void* address, unsigned int size) {
-	hook_arm_thumb((void *) sb_evaluate, sb_evaluate_hook_arm, sb_evaluate_hook_thumb);
+	hook_arm_thumb((void *) sb_evaluate, sb_evaluate_hook_arm, sb_evaluate_hook_thumbv2);
 	//hook_arm_thumb((void *) kprintf, NULL, kprintf_hook_thumb);
 	//kprintf("hook test\n");
 }
