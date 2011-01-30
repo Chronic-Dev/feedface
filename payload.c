@@ -84,7 +84,7 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 	unsigned char *paddress = address - 2;
 	
 	IOLog("Entering patch_kernel()\n");
-	 _memcpy(0x803e304c, "\x00\xB1\x01\x24\x20\x46\x90\xBD", 8);
+	 //_memcpy(0x803e304c, "\x00\xB1\x01\x24\x20\x46\x90\xBD", 8);
 
 	for(i = 0; i < size; i+=2) {
 		paddress+=2;
