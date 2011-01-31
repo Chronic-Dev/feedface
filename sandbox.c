@@ -1,81 +1,122 @@
 #include "payload.h"
 #include "patching.h"
 
+int (*vn_getpath) (void *vp, char *pathbuf, int *len) = (int (*) (void *vp, char *pathbuf, int *len)) _vn_getpath;
+
 __attribute__ ((flatten)) static unsigned int sb_evaluate_hook_arm(unsigned int unk1, unsigned int unk2, unsigned int unk3, unsigned int unk4) {
-	if (FALSE) {
-		*((unsigned int *) unk1) = 0;
-		((unsigned char *) unk1)[4] = 8;
-		return unk1;
-	} else {
-		asm (
-		// original parameters
-		"mov r0, %[unk1]\n\t"
-		"mov r1, %[unk2]\n\t"
-		"mov r2, %[unk3]\n\t"
-		"mov r3, %[unk4]\n\t"
-		"mov r12, %[addr]\n\t"
-		// hooked function overwritten epilog (converted to thumb)
-		"push {r4-r7, lr}\n\t"
-		"add r7, sp, #0xc\n\t"
-		"mov r4, r8\n\t"
-		"mov r5, r10\n\t"
-		"mov r6, r11\n\t"
-		"push {r4-r6}\n\t"
-		// adjust the LR and call hooked function
-		"add r5, r7, #0x4\n\t"
-		"mov r6, pc\n\t"
-		"add r6, #0x5\n\t"
-		"str r6, [r5]\n\t"
-		"bx r12\n\t"
-		"mov %[ret], r0\n\t"
-		: [ret]"=r" (unk1)
-		: [unk1]"r" (unk1), [unk2]"r" (unk2), [unk3]"r" (unk3), [unk4]"r" (unk4), [addr]"r" (0xbeefface)
-		: "r0", "r1", "r2", "r3", "r12"
-		);
-	
-		return unk1;
-	}
+	int ret;
+	int length = 255;
+	char path[length];
+
+	void *vnode = (void*) ((unsigned int *) unk4)[0x5];
+	if (vnode == NULL) goto hooked; 
+
+	// get the requested path:
+	_memset(path, 0, sizeof(path));
+	ret = vn_getpath(vnode, path, &length);
+	if (ret != 28 && ret != 0) goto hooked;
+
+	// access list
+	if (_memcmp(path, "/private/var/mobile", 19)==0
+		&& (_memcmp(path, "/private/var/mobile/Library/Preferences/com.apple", 49)==0
+			|| _memcmp(path, "/private/var/mobile/Library/Preferences", 39)!=0
+		)
+	) goto hooked;
+
+	// we accept this path
+	*((unsigned int *) unk1) = 0;
+	((unsigned char *) unk1)[4] = 8;
+	return unk1;
+
+hooked:
+	// calls the original sb_evaluate
+	asm (
+	// set parameters
+	"mov r0, %[unk1]\n\t"
+	"mov r1, %[unk2]\n\t"
+	"mov r2, %[unk3]\n\t"
+	"mov r3, %[unk4]\n\t"
+	"mov r12, %[addr]\n\t"
+	// hooked function overwritten epilog (converted to thumb)
+	"push {r4-r7, lr}\n\t"
+	"add r7, sp, #0xc\n\t"
+	"mov r4, r8\n\t"
+	"mov r5, r10\n\t"
+	"mov r6, r11\n\t"
+	"push {r4-r6}\n\t"
+	// adjust the LR and call hooked function
+	"add r5, r7, #0x4\n\t"
+	"mov r6, pc\n\t"
+	"add r6, #0x5\n\t"
+	"str r6, [r5]\n\t"
+	"bx r12\n\t"
+	"mov %[ret], r0\n\t"
+	: [ret]"=r" (unk1)
+	: [unk1]"r" (unk1), [unk2]"r" (unk2), [unk3]"r" (unk3), [unk4]"r" (unk4), [addr]"r" (0xbeefface)
+	: "r0", "r1", "r2", "r3", "r12"
+	);
+
+	return unk1;
 }
 
 __attribute__ ((flatten)) static unsigned int sb_evaluate_hook_thumbv2(unsigned int unk1, unsigned int unk2, unsigned int unk3, unsigned int unk4) {
-	// we'll do this one after arm version's finished.
-	if (FALSE) {
-		*((unsigned int *) unk1) = 0;
-		((unsigned char *) unk1)[4] = 8;
-		return unk1;
-	} else {
-		asm (
-		// original parameters
-		"mov r0, %[unk1]\n\t"
-		"mov r1, %[unk2]\n\t"
-		"mov r2, %[unk3]\n\t"
-		"mov r3, %[unk4]\n\t"
-		"mov r12, %[addr]\n\t"
-		// hooked function overwritten epilog (converted to thumb)
-		"push {r4-r7, lr}\n\t"
-		"add r7, sp, #0xc\n\t"
-		"mov r4, r8\n\t"
-		"mov r5, r10\n\t"
-		"mov r6, r11\n\t"
-		"push {r4-r6}\n\t"
-		"sub sp, sp, #0x104\n\t"
-		"mov r10, r0\n\t"
-		"ldr r0, [r3, #0x2c]\n\t"
-		"mov r11, r1\n\t"
-		// adjust the LR and call hooked function
-		"add r5, r7, #0x4\n\t"
-		"mov r6, pc\n\t"
-		"add r6, #0x5\n\t"
-		"str r6, [r5]\n\t"
-		"bx r12\n\t"
-		"mov %[ret], r0\n\t"
-		: [ret]"=r" (unk1)
-		: [unk1]"r" (unk1), [unk2]"r" (unk2), [unk3]"r" (unk3), [unk4]"r" (unk4), [addr]"r" (0xbeefface)
-		: "r0", "r1", "r2", "r3", "r12"
-		);
+	int ret;
+	int length = 255;
+	char path[length];
+
+	void *vnode = (void*) ((unsigned int *) unk4)[0x5];
+	if (vnode == NULL) goto hooked; 
+
+	// get the requested path:
+	_memset(path, 0, sizeof(path));
+	ret = vn_getpath(vnode, path, &length);
+	if (ret != 28 && ret != 0) goto hooked;
+
+	// access list
+	if (_memcmp(path, "/private/var/mobile", 19)==0
+		&& (_memcmp(path, "/private/var/mobile/Library/Preferences/com.apple", 49)==0
+			|| _memcmp(path, "/private/var/mobile/Library/Preferences", 39)!=0
+		)
+	) goto hooked;
+
+	// we accept this path
+	*((unsigned int *) unk1) = 0;
+	((unsigned char *) unk1)[4] = 8;
+	return unk1;
+
+hooked:
+	// calls the original sb_evaluate
+	asm (
+	// set parameters
+	"mov r0, %[unk1]\n\t"
+	"mov r1, %[unk2]\n\t"
+	"mov r2, %[unk3]\n\t"
+	"mov r3, %[unk4]\n\t"
+	"mov r12, %[addr]\n\t"
+	// hooked function overwritten epilog (converted to thumb)
+	"push {r4-r7, lr}\n\t"
+	"add r7, sp, #0xc\n\t"
+	"mov r4, r8\n\t"
+	"mov r5, r10\n\t"
+	"mov r6, r11\n\t"
+	"push {r4-r6}\n\t"
+	"sub sp, sp, #0x104\n\t"
+	"mov r10, r0\n\t"
+	"ldr r0, [r3, #0x2c]\n\t"
+	"mov r11, r1\n\t"
+	// adjust the LR and call hooked function
+	"add r5, r7, #0x4\n\t"
+	"mov r6, pc\n\t"
+	"add r6, #0x5\n\t"
+	"str r6, [r5]\n\t"
+	"bx r12\n\t"
+	"mov %[ret], r0\n\t"
+	: [ret]"=r" (unk1)
+	: [unk1]"r" (unk1), [unk2]"r" (unk2), [unk3]"r" (unk3), [unk4]"r" (unk4), [addr]"r" (0xbeefface)
+	: "r0", "r1", "r2", "r3", "r12"
+	);
 	
-		return unk1;
-	}
+	return unk1;
 }
 
 __attribute__ ((flatten)) static unsigned int kprintf_hook_thumb(unsigned int unk1, unsigned int unk2, unsigned int unk3, unsigned int unk4) {
