@@ -12,7 +12,7 @@ extern "C" {
  * CHANGE THESE!!!!!
  */
 #define FW_421
-#define IPOD3G
+#define POD3G
 
 #ifdef FW_421
 
