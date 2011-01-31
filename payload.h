@@ -16,13 +16,13 @@ extern "C" {
 
 #ifdef FW_421
 
-#ifdef IPHONE3GS // FIXME!!! sb_eval
+#ifdef IPHONE3GS
 	#define IOLog ((void (*)(char *fmt, ...)) 0x801a8a79)
 	#define kprintf ((void (*)(char *fmt, ...)) 0x801dd879)
 	#define kalloc ((void *(*)(unsigned int)) 0x80019021)
 	#define flush_dcache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e29d)
 	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e7cc)
-	#define sb_evaluate 0xDEADBEEF // FIXME!!!
+	#define sb_evaluate 0x804008B1
 #endif // IPHONE3GS
 
 #ifdef IPHONE4
