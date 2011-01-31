@@ -2,7 +2,7 @@
 #include "patching.h"
 
 __attribute__ ((flatten)) static unsigned int sb_evaluate_hook_arm(unsigned int unk1, unsigned int unk2, unsigned int unk3, unsigned int unk4) {
-	if (TRUE) {
+	if (FALSE) {
 		*((unsigned int *) unk1) = 0;
 		((unsigned char *) unk1)[4] = 8;
 		return unk1;
@@ -39,7 +39,7 @@ __attribute__ ((flatten)) static unsigned int sb_evaluate_hook_arm(unsigned int 
 
 __attribute__ ((flatten)) static unsigned int sb_evaluate_hook_thumbv2(unsigned int unk1, unsigned int unk2, unsigned int unk3, unsigned int unk4) {
 	// we'll do this one after arm version's finished.
-	if (TRUE) {
+	if (FALSE) {
 		*((unsigned int *) unk1) = 0;
 		((unsigned char *) unk1)[4] = 8;
 		return unk1;
