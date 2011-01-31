@@ -31,7 +31,7 @@ extern "C" {
 	#define kalloc ((void *(*)(unsigned int)) 0x80019021)
 	#define flush_dcache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e29d)
 	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e7cc)
-	#define sb_evaluate 0xDEADBEEF // FIXME!!!
+	#define sb_evaluate 0x804048B1
 #endif // IPHONE4
 
 #ifdef IPOD2G
@@ -40,7 +40,7 @@ extern "C" {
 	#define kalloc ((void *(*)(unsigned int)) 0x80019e2d)
 	#define flush_dcache ((void (*)(void *addr, unsigned size, int phys)) 0x8005fd41)
 	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005ffb8)
-	#define sb_evaluate 0x803d1b94
+	#define sb_evaluate 0x803d1b95
 #endif // IPOD2G
 
 #ifdef IPOD3G
