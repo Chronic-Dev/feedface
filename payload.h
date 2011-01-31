@@ -67,7 +67,7 @@ extern "C" {
 	#define kalloc ((void *(*)(unsigned int)) 0x80019021)
 	#define flush_dcache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e29d)
 	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e7cc)
-	#define sb_evaluate 0xDEADBEEF // FIXME!!!
+	#define sb_evaluate 0x804028B1
 #endif // IPAD1G
 
 #ifdef APPLETV2G
@@ -76,7 +76,7 @@ extern "C" {
 	#define kalloc ((void *(*)(unsigned int)) 0x80019021)
 	#define flush_dcache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e29d)
 	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e7cc)
-	#define sb_evaluate 0xDEADBEEF // FIXME!!!
+	#define sb_evaluate 0x803308B1
 #endif // APPLETV2G
 
 #endif // FW_421
