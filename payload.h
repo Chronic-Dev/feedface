@@ -8,14 +8,10 @@ extern "C" {
 #include <sys/types.h>
 #include <sys/mount.h>
 
-/*
- * CHANGE THESE!!!!!
- */
 #define FW_421
 #define IPOD3G
 
 #ifdef FW_421
-
 
 #ifdef IPHONE3GS
 	#define IOLog ((void (*)(char *fmt, ...)) 0x801a8a79)
@@ -34,7 +30,7 @@ extern "C" {
 	#define flush_dcache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e29d)
 	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e7cc)
 	#define sb_evaluate 0x804048B1
-	#define _vn_getpath 0x804048B1
+	#define _vn_getpath 0x80088771
 #endif // IPHONE4
 
 #ifdef IPOD2G
@@ -44,7 +40,7 @@ extern "C" {
 	#define flush_dcache ((void (*)(void *addr, unsigned size, int phys)) 0x8005fd41)
 	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005ffb8)
 	#define sb_evaluate 0x803d1b94
-	#define _vn_getpath 0xDEADBEEF // FIXME!!!
+	#define _vn_getpath 0x80087f53
 #endif // IPOD2G
 
 #ifdef IPOD3G
@@ -64,7 +60,7 @@ extern "C" {
 	#define flush_dcache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e29d)
 	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e7cc)
 	#define sb_evaluate 0x804028B1
-	#define _vn_getpath 0xDEADBEEF // FIXME!!!
+	#define _vn_getpath 0x80088771
 #endif // IPOD4G
 
 #ifdef IPAD1G
@@ -74,7 +70,7 @@ extern "C" {
 	#define flush_dcache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e29d)
 	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e7cc)
 	#define sb_evaluate 0x804028B1
-	#define _vn_getpath 0xDEADBEEF // FIXME!!!
+	#define _vn_getpath 0x80088771
 #endif // IPAD1G
 
 #ifdef APPLETV2G
@@ -84,7 +80,7 @@ extern "C" {
 	#define flush_dcache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e29d)
 	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e7cc)
 	#define sb_evaluate 0x803308B1
-	#define _vn_getpath 0xDEADBEEF // FIXME!!!
+	#define _vn_getpath 0x80088771
 #endif // APPLETV2G
 
 #endif // FW_421
