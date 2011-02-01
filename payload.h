@@ -33,6 +33,16 @@ extern "C" {
 	#define _vn_getpath 0x80088771
 #endif // IPHONE4
 
+#ifdef IPHONE42
+	#define IOLog ((void (*)(char *fmt, ...)) 0x801a8b59)
+	#define kprintf ((void (*)(char *fmt, ...)) 0x801dd95d)
+	#define kalloc ((void *(*)(unsigned int)) 0x80019021)
+	#define flush_dcache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e2ad)
+	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e80c)
+	#define sb_evaluate 0x804008B1 //FIXME!!!
+	#define _vn_getpath 0x80088771
+#endif // IPHONE42
+
 #ifdef IPOD2G
 	#define IOLog ((void (*)(char *fmt, ...)) 0x801a6be9)
 	#define kprintf ((void (*)(char *fmt, ...)) 0x801dcccd)
