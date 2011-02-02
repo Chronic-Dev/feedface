@@ -112,6 +112,19 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 			continue;
 		}
 
+		if(mem8eq(paddress, "\x02\x0F\x30\xD1\x63\x08\x03\xF0")) {
+			target = i + 0;
+			IOLog("Found vm_map_enter armv7 kernel patch at %p\n", &address[target]);
+			_memcpy((char*) &address[target], "\x02\x0f\xc0\x46", 4);
+			continue;
+		}
+		if(mem8eq(paddress, "\x37\x98\x80\x07\x33\xd4\x63\x08")) {
+			target = i + 4;
+			IOLog("Found vm_map_enter armv6 kernel patch at %p\n", &address[target]);
+			_memcpy((char*) &address[target], "\x33\xe4\x63\x08", 4);
+			continue;
+		}
+
 /*
 		// Patch 3
 		if(mem8eq(paddress, "\x00\x23\x00\x94\x01\x95\x02\x95")) {
