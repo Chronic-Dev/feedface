@@ -9,10 +9,9 @@ extern "C" {
 #include <sys/mount.h>
 
 #define FW_421
-#define IPOD3G
+#define IPHONE3GS
 
 #ifdef FW_421
-
 #ifdef IPHONE3GS
 	#define IOLog ((void (*)(char *fmt, ...)) 0x801a8a79)
 	#define kprintf ((void (*)(char *fmt, ...)) 0x801dd879)
@@ -21,6 +20,7 @@ extern "C" {
 	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e7cc)
 	#define sb_evaluate 0x804008B1
 	#define _vn_getpath 0x80088771
+	#define OFFSET_AMFI_PATCH 0x803E604C
 #endif // IPHONE3GS
 
 #ifdef IPHONE4
@@ -31,6 +31,7 @@ extern "C" {
 	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e7cc)
 	#define sb_evaluate 0x804048B1
 	#define _vn_getpath 0x80088771
+	#define OFFSET_AMFI_PATCH 0x803EA04C
 #endif // IPHONE4
 
 #ifdef IPHONE42
@@ -41,6 +42,7 @@ extern "C" {
 	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e80c)
 	#define sb_evaluate 0x804008B1 //FIXME!!!
 	#define _vn_getpath 0x80088771
+	#define OFFSET_AMFI_PATCH 0x803EA04C //FIXME!!!
 #endif // IPHONE42
 
 #ifdef IPOD2G
@@ -51,6 +53,7 @@ extern "C" {
 	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005ffb8)
 	#define sb_evaluate 0x803d1b94
 	#define _vn_getpath 0x80087f53
+	#define OFFSET_AMFI_PATCH 0x0803B508C
 #endif // IPOD2G
 
 #ifdef IPOD3G
@@ -61,6 +64,7 @@ extern "C" {
 	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e7cc)
 	#define sb_evaluate 0x803FD8B1
 	#define _vn_getpath 0x80088771
+	#define OFFSET_AMFI_PATCH 0x803e304c
 #endif //IPOD3G
 
 #ifdef IPOD4G
@@ -71,6 +75,7 @@ extern "C" {
 	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e7cc)
 	#define sb_evaluate 0x804028B1
 	#define _vn_getpath 0x80088771
+	#define OFFSET_AMFI_PATCH 0x803EA04C //FIXME!!!
 #endif // IPOD4G
 
 #ifdef IPAD1G
@@ -81,6 +86,7 @@ extern "C" {
 	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e7cc)
 	#define sb_evaluate 0x804028B1
 	#define _vn_getpath 0x80088771
+	#define OFFSET_AMFI_PATCH 0x803EA04C //FIXME!!!
 #endif // IPAD1G
 
 #ifdef APPLETV2G
@@ -91,6 +97,7 @@ extern "C" {
 	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e7cc)
 	#define sb_evaluate 0x803308B1
 	#define _vn_getpath 0x80088771
+	#define OFFSET_AMFI_PATCH 0x803EA04C //FIXME!!!
 #endif // APPLETV2G
 
 #endif // FW_421

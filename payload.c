@@ -84,10 +84,15 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 	unsigned char *paddress = address - 2;
 	
 	IOLog("Entering patch_kernel()\n");
-	//_memcpy(0x0803B508C, "\x01\x40\xA0\xE3", 4); // iPod2,1 4.2.1
-	//_memcpy(0x803e304c, "\x00\xB1\x01\x24\x20\x46\x90\xBD", 8); // iPod3,1 4.2.1
-	//_memcpy(0x803E604C, "\x00\xB1\x01\x24\x20\x46\x90\xBD", 8); // iPhone2,1 4.2.1
-	//_memcpy(0x803EA04C, "\x00\xB1\x01\x24\x20\x46\x90\xBD", 8); // iPhone3,1 4.2.1
+
+	// temporary hardcoded AMFI patch
+#ifdef FW_421
+#ifdef IPOD2G
+	_memcpy(OFFSET_AMFI_PATCH, "\x01\x40\xA0\xE3", 4);
+#else
+	_memcpy(OFFSET_AMFI_PATCH, "\x00\xB1\x01\x24\x20\x46\x90\xBD", 8);
+#endif
+#endif
 
 	for(i = 0; i < size; i+=2) {
 		paddress+=2;
