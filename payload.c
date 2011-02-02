@@ -84,20 +84,10 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 	unsigned char *paddress = address - 2;
 	
 	IOLog("Entering patch_kernel()\n");
-	 //_memcpy(0x803e304c, "\x00\xB1\x01\x24\x20\x46\x90\xBD", 8);
+	//_memcpy(0x803e304c, "\x00\xB1\x01\x24\x20\x46\x90\xBD", 8);
 
 	for(i = 0; i < size; i+=2) {
 		paddress+=2;
-		/*
-		// Patch 1
-		if(mem16eq(paddress, "\x00\x00\x00\x00\x01\x00\x00\x00\x80\x00\x00\x00\x00\x00\x00\x00")) {
-			target = i + 0;
-			IOLog("Found cs_validation kernel patch at %p\n", &address[target]);
-			_memcpy(&address[target], "\x01\x00\x00\x00\x01\x00\x00\x00\x80\x00\x00\x00\x00\x00\x00\x00", 16);
-			continue;
-		}
-		*/
-
 		// Patch 2
 		if(mem8eq(paddress, "\x00\xB1\x00\x24\x20\x46\x90\xBD")) {
 			target = i + 0;
@@ -111,58 +101,6 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 			_memcpy((char*) &address[target], "\x01\x40\xA0\xE3", 4);
 			continue;
 		}
-
-		if(mem8eq(paddress, "\x02\x0F\x30\xD1\x63\x08\x03\xF0")) {
-			target = i + 0;
-			IOLog("Found vm_map_enter armv7 kernel patch at %p\n", &address[target]);
-			_memcpy((char*) &address[target], "\x02\x0f\xc0\x46", 4);
-			continue;
-		}
-		if(mem8eq(paddress, "\x37\x98\x80\x07\x33\xd4\x63\x08")) {
-			target = i + 4;
-			IOLog("Found vm_map_enter armv6 kernel patch at %p\n", &address[target]);
-			_memcpy((char*) &address[target], "\x33\xe4\x63\x08", 4);
-			continue;
-		}
-
-/*
-		// Patch 3
-		if(mem8eq(paddress, "\x00\x23\x00\x94\x01\x95\x02\x95")) {
-			target = i + 10;
-			IOLog("Found PROD kernel patch at %p\n", &address[target]);
-			_memcpy(&address[target], "\x00\x20\x00\xD3\x80\x04\x98\x02\x21\x7C\x4B\x20", 4);
-			continue;
-		}
-
-		// Patch 4
-		if(mem8eq(paddress, "\x02\x90\x03\x90\x1D\x49\x50\x46")) {
-			target = i + 12;
-			IOLog("Found SHSH armv7 kernel patch at %p\n", &address[target]);
-			_memcpy(&address[target], "\x00\x20\x00\x20", 4);
-			continue;
-		}
-		if(mem8eq(paddress, "\x02\x90\x03\x90\x06\x9A\x07\x9B")) {
-			target = i + 12;
-			IOLog("Found SHSH armv6 kernel patch at %p\n", &address[target]);
-			_memcpy(&address[target], "\x00\x20\x00\x20", 4);
-			continue;
-		}
-
-		// Patch 5
-		if(mem8eq(paddress, "\xD3\x80\x04\x98\x02\x21\x7C\x4B")
-				|| mem8eq(paddress, "\x98\x47\x50\xB9\x00\x98\x02\x21")) {
-			target = i + 8;
-			IOLog("Found ECID armv7 kernel patch at %p\n", &address[target]);
-			_memcpy(&address[target], "\x00\x20", 2);
-			continue;
-		}
-		if(mem8eq(paddress, "\x0D\xD1\x01\x98\x02\x21\x34\x4B")) {
-			target = i + 8;
-			IOLog("Found ECID armv6 kernel patch at %p\n", &address[target]);
-			_memcpy(&address[target], "\x00\x20", 2);
-			continue;
-		}
-*/
 
 		// Patch 6
 		if(mem8eq(paddress, "\x00\x28\x40\xF0\xCC\x80\x04\x98")
@@ -188,16 +126,6 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 			_memcpy(&address[target], "\x00\x20\x00\x20", 4);
 			continue;
 		}
-/*
-		// Patch 9
-		if(mem8eq(paddress, "\x85\x68\x00\x23\x02\x93\x01\x93") ||
-				mem8eq(paddress, "\x85\x68\x00\x23\x04\x93\x03\x93")) {
-			target = i + 8;
-			IOLog("Found task_for_pid(0) kernel patch at %p\n", &address[target]);
-			_memcpy(&address[target], "\x0B\xE0\xC0\x46", 4);
-			continue;
-		}
-*/
 	}
 	
 	return 0;
