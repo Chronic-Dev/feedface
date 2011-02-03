@@ -93,7 +93,7 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 	_memcpy(OFFSET_AMFI_PATCH, "\x00\xB1\x01\x24\x20\x46\x90\xBD", 8);
 #endif
 #endif
-    //_memcpy(OFFSET_ICANHAZ_PATCH, "\x01\x20\x70\x47", 4);
+    _memcpy(OFFSET_ICANHAZ_PATCH, "\x01\x20\x70\x47", 4);
 
 	for(i = 0; i < size; i+=2) {
 		paddress+=2;
