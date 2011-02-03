@@ -40,9 +40,9 @@ extern "C" {
 	#define kalloc ((void *(*)(unsigned int)) 0x80019021)
 	#define flush_dcache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e2ad)
 	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e80c)
-	#define sb_evaluate 0x804008B1 //FIXME!!!
+	#define sb_evaluate 0x804008B1
 	#define _vn_getpath 0x80088771
-	#define OFFSET_AMFI_PATCH 0x803EA04C //FIXME!!!
+	#define OFFSET_AMFI_PATCH 0x803E6052
 #endif // IPHONE42
 
 #ifdef IPOD2G
@@ -75,7 +75,7 @@ extern "C" {
 	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e7cc)
 	#define sb_evaluate 0x804028B1
 	#define _vn_getpath 0x80088771
-	#define OFFSET_AMFI_PATCH 0x803EA04C //FIXME!!!
+	#define OFFSET_AMFI_PATCH 0x803E804C
 #endif // IPOD4G
 
 #ifdef IPAD1G
@@ -86,7 +86,7 @@ extern "C" {
 	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e7cc)
 	#define sb_evaluate 0x804028B1
 	#define _vn_getpath 0x80088771
-	#define OFFSET_AMFI_PATCH 0x803EA04C //FIXME!!!
+	#define OFFSET_AMFI_PATCH 0x803E804C
 #endif // IPAD1G
 
 #ifdef APPLETV2G
@@ -97,7 +97,7 @@ extern "C" {
 	#define invalidate_icache ((void (*)(void *addr, unsigned size, int phys)) 0x8005e7cc)
 	#define sb_evaluate 0x803308B1
 	#define _vn_getpath 0x80088771
-	#define OFFSET_AMFI_PATCH 0x803EA04C //FIXME!!!
+	#define OFFSET_AMFI_PATCH 0x8031604C
 #endif // APPLETV2G
 
 #endif // FW_421
