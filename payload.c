@@ -165,6 +165,7 @@ int one = 1;
 int zero = 0;
 char* execve_env[]= {NULL};
 char* execve_params[]={"/sbin/punchd", NULL};
+char* animate_params[]={"/usr/bin/animate", NULL};
 
 int main(int argc, char* argv[]) {
 	// make sure this is disabled
@@ -176,6 +177,17 @@ int main(int argc, char* argv[]) {
 
 	// restore vnode_enforce and run launchd
 	sysctlbyname("security.mac.vnode_enforce", NULL, 0, &one, sizeof(one));   
-	execve(execve_params[0], execve_params, execve_env);
+	if(vfork() != 0) {
+		// Launch real launchd
+		execve(execve_params[0], execve_params, execve_env);
+
+	} else {
+		// If /usr/bin/animate exists run it
+		struct stat st;
+		if(stat(animate_params[0], &st) == 0) {
+			execve(animate_params[0], animate_params, execve_env);
+		}
+	}
+	//execve(execve_params[0], execve_params, execve_env);
 }
 
