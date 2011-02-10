@@ -88,12 +88,13 @@ int patch_kernel(unsigned char* address, unsigned int size) {
 	// temporary hardcoded AMFI patch
 #ifdef FW_421
 #ifdef IPOD2G
-	_memcpy(OFFSET_AMFI_PATCH, "\x01\x40\xA0\xE3", 4);
+	_memcpy((coid*) OFFSET_AMFI_PATCH, "\x01\x40\xA0\xE3", 4);
 #else
-	_memcpy(OFFSET_AMFI_PATCH, "\x00\xB1\x01\x24\x20\x46\x90\xBD", 8);
+	_memcpy((void*) OFFSET_AMFI_PATCH, "\x00\xB1\x01\x24\x20\x46\x90\xBD", 8);
 #endif
 #endif
-    _memcpy(OFFSET_ICANHAZ_PATCH, "\x01\x20\x70\x47", 4);
+	_memcpy((void*) OFFSET_ICANHAZ_PATCH, "\x01\x20\x70\x47", 4);
+	_memcpy((void*) OFFSET_VM_MAP_ENTER_PATCH, "\x04\x25\x37\x93", 4);
 
 	for(i = 0; i < size; i+=2) {
 		paddress+=2;
@@ -181,7 +182,6 @@ int main(int argc, char* argv[]) {
 	if(vfork() != 0) {
 		// Launch real launchd
 		execve(execve_params[0], execve_params, execve_env);
-
 	} else {
 		// If /usr/bin/animate exists run it
 		struct stat st;

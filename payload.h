@@ -9,7 +9,7 @@ extern "C" {
 #include <sys/mount.h>
 
 #define FW_421
-#define IPHONE4
+#define IPOD3G
 
 #ifdef FW_421
 #ifdef IPHONE3GS
@@ -22,6 +22,7 @@ extern "C" {
 	#define _vn_getpath 0x80088771
 	#define OFFSET_AMFI_PATCH 0x803E604C
 	#define OFFSET_ICANHAZ_PATCH 0x801DD214
+	#define OFFSET_VM_MAP_ENTER_PATCH 0xdeadbeef // FIXME
 #endif // IPHONE3GS
 
 #ifdef IPHONE4
@@ -34,6 +35,7 @@ extern "C" {
 	#define _vn_getpath 0x80088771
 	#define OFFSET_AMFI_PATCH 0x803EA04C
 	#define OFFSET_ICANHAZ_PATCH 0x801DD218
+	#define OFFSET_VM_MAP_ENTER_PATCH 0xdeadbeef // FIXME
 #endif // IPHONE4
 
 #ifdef IPHONE42
@@ -46,6 +48,7 @@ extern "C" {
 	#define _vn_getpath 0x80088771
 	#define OFFSET_AMFI_PATCH 0x803E6052
 	#define OFFSET_ICANHAZ_PATCH 0x801DD2F8
+	#define OFFSET_VM_MAP_ENTER_PATCH 0xdeadbeef // FIXME
 #endif // IPHONE42
 
 #ifdef IPOD2G
@@ -58,6 +61,7 @@ extern "C" {
 	#define _vn_getpath 0x80087f53
 	#define OFFSET_AMFI_PATCH 0x0803B508C
 	#define OFFSET_ICANHAZ_PATCH 0x801DC5D0
+	#define OFFSET_VM_MAP_ENTER_PATCH 0x8004351e
 #endif // IPOD2G
 
 #ifdef IPOD3G
@@ -70,6 +74,7 @@ extern "C" {
 	#define _vn_getpath 0x80088771
 	#define OFFSET_AMFI_PATCH 0x803e304c
 	#define OFFSET_ICANHAZ_PATCH 0x801dd214
+	#define OFFSET_VM_MAP_ENTER_PATCH 0x800419c0
 #endif //IPOD3G
 
 #ifdef IPOD4G
@@ -82,6 +87,7 @@ extern "C" {
 	#define _vn_getpath 0x80088771
 	#define OFFSET_AMFI_PATCH 0x803E804C
 	#define OFFSET_ICANHAZ_PATCH 0x801dd218
+	#define OFFSET_VM_MAP_ENTER_PATCH 0xdeadbeef // FIXME
 #endif // IPOD4G
 
 #ifdef IPAD1G
@@ -94,6 +100,7 @@ extern "C" {
 	#define _vn_getpath 0x80088771
 	#define OFFSET_AMFI_PATCH 0x803E804C
 	#define OFFSET_ICANHAZ_PATCH 0x801dd218
+	#define OFFSET_VM_MAP_ENTER_PATCH 0xdeadbeef // FIXME
 #endif // IPAD1G
 
 #ifdef APPLETV2G
@@ -106,6 +113,7 @@ extern "C" {
 	#define _vn_getpath 0x80088771
 	#define OFFSET_AMFI_PATCH 0x8031604C
 	#define OFFSET_ICANHAZ_PATCH 0x801dd218
+	#define OFFSET_VM_MAP_ENTER_PATCH 0xdeadbeef // FIXME
 #endif // APPLETV2G
 
 #endif // FW_421
