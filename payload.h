@@ -9,7 +9,7 @@ extern "C" {
 #include <sys/mount.h>
 
 #define FW_421
-#define IPOD3G
+#define APPLETV2G
 
 // OFFSET_VM_MAP_ENTER_PATCH: is mandatory for apps playing with mprotect (example: gpsPhone)
 //                            - search xref to "vm_map_enter", NOP the following BIC
@@ -78,7 +78,6 @@ extern "C" {
 	#define OFFSET_AMFI_PATCH 0x803e304c
 	#define OFFSET_ICANHAZ_PATCH 0x801dd214
 	#define OFFSET_VM_MAP_ENTER_PATCH 0x800419c0
-	#define _sysctlbyname ((int (*) (char *, void *, int *, void *, int)) 0x8015BFA1)
 #endif //IPOD3G
 
 #ifdef IPOD4G
