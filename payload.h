@@ -11,6 +11,9 @@ extern "C" {
 #define FW_421
 #define IPOD3G
 
+// OFFSET_VM_MAP_ENTER_PATCH: is mandatory for apps playing with mprotect (example: gpsPhone)
+//                            - search xref to "vm_map_enter", NOP the following BIC
+
 #ifdef FW_421
 #ifdef IPHONE3GS
 	#define IOLog ((void (*)(char *fmt, ...)) 0x801a8a79)
@@ -22,7 +25,7 @@ extern "C" {
 	#define _vn_getpath 0x80088771
 	#define OFFSET_AMFI_PATCH 0x803E604C
 	#define OFFSET_ICANHAZ_PATCH 0x801DD214
-	#define OFFSET_VM_MAP_ENTER_PATCH 0xdeadbeef // FIXME
+	#define OFFSET_VM_MAP_ENTER_PATCH 0x800419c0
 #endif // IPHONE3GS
 
 #ifdef IPHONE4
@@ -35,7 +38,7 @@ extern "C" {
 	#define _vn_getpath 0x80088771
 	#define OFFSET_AMFI_PATCH 0x803EA04C
 	#define OFFSET_ICANHAZ_PATCH 0x801DD218
-	#define OFFSET_VM_MAP_ENTER_PATCH 0xdeadbeef // FIXME
+	#define OFFSET_VM_MAP_ENTER_PATCH 0x800419c0
 #endif // IPHONE4
 
 #ifdef IPHONE42
@@ -48,7 +51,7 @@ extern "C" {
 	#define _vn_getpath 0x80088771
 	#define OFFSET_AMFI_PATCH 0x803E6052
 	#define OFFSET_ICANHAZ_PATCH 0x801DD2F8
-	#define OFFSET_VM_MAP_ENTER_PATCH 0xdeadbeef // FIXME
+	#define OFFSET_VM_MAP_ENTER_PATCH 0x800419d0
 #endif // IPHONE42
 
 #ifdef IPOD2G
@@ -75,6 +78,7 @@ extern "C" {
 	#define OFFSET_AMFI_PATCH 0x803e304c
 	#define OFFSET_ICANHAZ_PATCH 0x801dd214
 	#define OFFSET_VM_MAP_ENTER_PATCH 0x800419c0
+	#define _sysctlbyname ((int (*) (char *, void *, int *, void *, int)) 0x8015BFA1)
 #endif //IPOD3G
 
 #ifdef IPOD4G
@@ -87,7 +91,7 @@ extern "C" {
 	#define _vn_getpath 0x80088771
 	#define OFFSET_AMFI_PATCH 0x803E804C
 	#define OFFSET_ICANHAZ_PATCH 0x801dd218
-	#define OFFSET_VM_MAP_ENTER_PATCH 0xdeadbeef // FIXME
+	#define OFFSET_VM_MAP_ENTER_PATCH 0x800419c0
 #endif // IPOD4G
 
 #ifdef IPAD1G
@@ -100,7 +104,7 @@ extern "C" {
 	#define _vn_getpath 0x80088771
 	#define OFFSET_AMFI_PATCH 0x803E804C
 	#define OFFSET_ICANHAZ_PATCH 0x801dd218
-	#define OFFSET_VM_MAP_ENTER_PATCH 0xdeadbeef // FIXME
+	#define OFFSET_VM_MAP_ENTER_PATCH 0x800419c0
 #endif // IPAD1G
 
 #ifdef APPLETV2G
@@ -113,7 +117,7 @@ extern "C" {
 	#define _vn_getpath 0x80088771
 	#define OFFSET_AMFI_PATCH 0x8031604C
 	#define OFFSET_ICANHAZ_PATCH 0x801dd218
-	#define OFFSET_VM_MAP_ENTER_PATCH 0xdeadbeef // FIXME
+	#define OFFSET_VM_MAP_ENTER_PATCH 0x800419d0
 #endif // APPLETV2G
 
 #endif // FW_421
