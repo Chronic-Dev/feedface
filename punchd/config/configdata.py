@@ -42,7 +42,7 @@
             
             # pop {r6,r7} ; bx lr
             'k101' : '@ - c0 00 bd e8 1e ff 2f e1',
-            # mov r0, #0; bx lr  (dyld bin is executable?)
+            # mov r0, #0; bx lr  (replacement for ImageLoaderMachO::isDylib)
             'k102' : '@ + 00 20 70 47',
             # SUB SP, R7, #0 ; pop {R7,PC}
             'k103' : '@ + A7 F1 00 0D 80 BD 00 BF',
@@ -66,7 +66,7 @@
             
             # pop {r6,r7} ; bx lr
             'k101' : '@ - c0 00 bd e8 1e ff 2f e1',
-            # mov r0, #0; bx lr  (dyld bin is executable?)
+            # mov r0, #0; bx lr  (replacement for ImageLoaderMachO::isDylib)
             'k102' : '@ + 00 20 70 47',
             # SUB SP, R7, #0 ; pop {R7,PC}
             'k103' : '@ - 00 D0 47 E2 80 80 bd E8',
