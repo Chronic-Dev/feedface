@@ -1,7 +1,7 @@
 Incomplete codesign - variation of comex's launchd mod_initializers trick
 it all happens in dyld's ImageLoaderMachO::doModInitFunctions() (not the open source one)
 
-1. find gadgets addrs for target device
+1. find gadgets addrs for target device (comex's config script)
     cd config
     python config.py iPhone3,1_4.2.1
 2. compile executable and patch gadgets palceholders
